@@ -29,3 +29,5 @@
 
 - Starter credit is awarded by an insert trigger and an idempotent migration marker. Why: existing and future accounts receive the credit exactly once.
 - Rewarded daily wheel uses a locked database transaction and persisted cooldown; rocket practice never modifies financial balances. Why: prevent replayed rewards and unsafe client-side gambling settlement.
+- Ad SDK loads only after consent; only authenticated Monetag postbacks confirm unique server-issued impressions and withdrawals consume confirmed events atomically. Why: browser callbacks cannot prove ad views.
+- Referral stages are awarded by user-row triggers with persisted one-time flags, and mining progress counts completed session resets. Why: avoid duplicate credits and reward actual activity.
