@@ -73,7 +73,7 @@ export function NftTab() {
             <div className="relative"><img src={NFT_IMAGES[n.tier - 1]} alt={n.name} loading="lazy" className="aspect-square w-full object-cover" /><span className="absolute left-2 top-2 rounded-full bg-background/70 px-2 py-0.5 text-[10px] backdrop-blur">#{n.tier}</span>{ownedTiers.includes(n.tier) && <span className="absolute right-2 top-2 rounded-full bg-primary px-2 py-0.5 text-[10px] text-primary-foreground">Owned</span>}</div>
             <div className="space-y-2 p-3">
               <h2 className="truncate text-sm font-bold">{n.name}</h2>
-              <div className="flex gap-1.5 text-[10px] text-muted-foreground" dir="ltr"><span className="rounded-full bg-muted px-2 py-0.5">⛏ +{Math.round(n.mining * 100)}%</span><span className="rounded-full bg-muted px-2 py-0.5">👥 +{Math.round(n.referral * 100)}%</span></div>
+              <div className="flex gap-1.5 text-[10px] text-muted-foreground" dir="ltr"><span className="rounded-full bg-muted px-2 py-0.5">Mining +{Math.round(n.mining * 100)}%</span><span className="rounded-full bg-muted px-2 py-0.5">Referral +{Math.round(n.referral * 100)}%</span></div>
               <PrimaryButton className="flex h-9 items-center justify-center gap-1 rounded-full text-xs" onClick={() => buy(n)} disabled={busy !== null}>
                 {busy === n.tier ? t("pending") : <><CoinIcon src={GRAM_ICON} className="size-3.5" />{n.price}</>}
               </PrimaryButton>
@@ -81,7 +81,6 @@ export function NftTab() {
           </div>
         ))}
       </div>
-      <p className="text-xs text-muted-foreground">{ar ? "المزايا حسب أعلى فئة تملكها، وليست ضمانًا لأرباح." : "Perks follow your highest owned tier and are not a guaranteed return."}</p>
     </div>
   );
 }

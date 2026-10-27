@@ -42,3 +42,8 @@
 - [ ] Games: spin on top, remove ticket texts & card subtitles, better ticket balance, auto daily 5
 - [ ] Redesign NFT cards
 - [ ] Full game redesign; crash with Telegram duck (licensing blocked → use Orange art)
+- [ ] Share-to-story task + share-message (prepared inline message w/ button) task in Ours
+- [ ] Referral tasks 20→100
+- [ ] NFT cards without emoji; new NFT art; auto mint via Getgems API
+- [ ] New wallet page image
+- [ ] Real GRAM/ORAI price from STON API
