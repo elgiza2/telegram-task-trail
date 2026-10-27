@@ -32,7 +32,7 @@ function Profile() {
       </div>
     </div>
     <div className="grid grid-cols-2 gap-3">
-      <Link to="/power" search={{ tab: "nft" }} className="rounded-2xl bg-card p-4 font-bold">NFT<div className="mt-1 text-xs font-normal text-muted-foreground">Orange</div></Link>
+      <Link to="/" className="rounded-2xl bg-card p-4 font-bold">NFT<div className="mt-1 text-xs font-normal text-muted-foreground">Orange</div></Link>
       <button onClick={() => openLink(SWAP_URL)} className="rounded-2xl bg-card p-4 text-start font-bold">STON.fi<div className="mt-1 text-xs font-normal text-muted-foreground">{x("buy")}</div></button>
     </div>
     {groups.map((g, gi) => <div key={gi} className="overflow-hidden rounded-2xl bg-card">
