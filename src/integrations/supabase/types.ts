@@ -644,6 +644,334 @@ export type Database = {
           },
         ]
       }
+      orai_bot_campaigns: {
+        Row: {
+          created_at: string
+          failed: number
+          id: string
+          last_user_id: number
+          lease_token: string | null
+          lease_until: string | null
+          max_user_id: number
+          messages: Json
+          pause_reason: string | null
+          sent: number
+          status: string
+        }
+        Insert: {
+          created_at?: string
+          failed?: number
+          id?: string
+          last_user_id?: number
+          lease_token?: string | null
+          lease_until?: string | null
+          max_user_id: number
+          messages: Json
+          pause_reason?: string | null
+          sent?: number
+          status?: string
+        }
+        Update: {
+          created_at?: string
+          failed?: number
+          id?: string
+          last_user_id?: number
+          lease_token?: string | null
+          lease_until?: string | null
+          max_user_id?: number
+          messages?: Json
+          pause_reason?: string | null
+          sent?: number
+          status?: string
+        }
+        Relationships: []
+      }
+      orai_market_snapshots: {
+        Row: {
+          data: Json
+          id: string
+          updated_at: string
+        }
+        Insert: {
+          data: Json
+          id: string
+          updated_at?: string
+        }
+        Update: {
+          data?: Json
+          id?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      orai_nfts: {
+        Row: {
+          created_at: string
+          id: string
+          item_index: number | null
+          mint_status: string
+          nft_address: string | null
+          price_gram: number
+          tier: number
+          tx_hash: string | null
+          user_id: number
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          item_index?: number | null
+          mint_status?: string
+          nft_address?: string | null
+          price_gram?: number
+          tier?: number
+          tx_hash?: string | null
+          user_id: number
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          item_index?: number | null
+          mint_status?: string
+          nft_address?: string | null
+          price_gram?: number
+          tier?: number
+          tx_hash?: string | null
+          user_id?: number
+        }
+        Relationships: []
+      }
+      orai_payout_lock: {
+        Row: {
+          expires_at: string | null
+          id: number
+          token: string | null
+        }
+        Insert: {
+          expires_at?: string | null
+          id: number
+          token?: string | null
+        }
+        Update: {
+          expires_at?: string | null
+          id?: number
+          token?: string | null
+        }
+        Relationships: []
+      }
+      orai_task_apps: {
+        Row: {
+          created_at: string
+          id: string
+          image: string
+          name: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          image: string
+          name: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          image?: string
+          name?: string
+        }
+        Relationships: []
+      }
+      orai_task_completions: {
+        Row: {
+          created_at: string
+          task_id: string
+          user_id: number
+        }
+        Insert: {
+          created_at?: string
+          task_id: string
+          user_id: number
+        }
+        Update: {
+          created_at?: string
+          task_id?: string
+          user_id?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "orai_task_completions_task_id_fkey"
+            columns: ["task_id"]
+            isOneToOne: false
+            referencedRelation: "orai_tasks"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      orai_tasks: {
+        Row: {
+          active: boolean
+          app_id: string | null
+          app_image: string | null
+          app_name: string | null
+          chat_id: string | null
+          created_at: string
+          id: string
+          image_url: string | null
+          kind: string
+          link: string
+          reward: number
+          sort: number
+          title: string
+          title_i18n: Json
+        }
+        Insert: {
+          active?: boolean
+          app_id?: string | null
+          app_image?: string | null
+          app_name?: string | null
+          chat_id?: string | null
+          created_at?: string
+          id?: string
+          image_url?: string | null
+          kind?: string
+          link: string
+          reward?: number
+          sort?: number
+          title: string
+          title_i18n?: Json
+        }
+        Update: {
+          active?: boolean
+          app_id?: string | null
+          app_image?: string | null
+          app_name?: string | null
+          chat_id?: string | null
+          created_at?: string
+          id?: string
+          image_url?: string | null
+          kind?: string
+          link?: string
+          reward?: number
+          sort?: number
+          title?: string
+          title_i18n?: Json
+        }
+        Relationships: [
+          {
+            foreignKeyName: "orai_tasks_app_id_fkey"
+            columns: ["app_id"]
+            isOneToOne: false
+            referencedRelation: "orai_task_apps"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      orai_tg_users: {
+        Row: {
+          balance: number
+          created_at: string
+          first_name: string | null
+          id: number
+          language_code: string | null
+          mining_pending: number
+          mining_rate_daily: number
+          mining_settled_at: string | null
+          mining_started_at: string | null
+          photo_url: string | null
+          power_level: number
+          referral_earned: number
+          referral_rate: number
+          referred_by: number | null
+          subscribed_until: string | null
+          username: string | null
+          wallet_address: string | null
+          wallet_nonce: string | null
+          wallet_verified: boolean
+        }
+        Insert: {
+          balance?: number
+          created_at?: string
+          first_name?: string | null
+          id: number
+          language_code?: string | null
+          mining_pending?: number
+          mining_rate_daily?: number
+          mining_settled_at?: string | null
+          mining_started_at?: string | null
+          photo_url?: string | null
+          power_level?: number
+          referral_earned?: number
+          referral_rate?: number
+          referred_by?: number | null
+          subscribed_until?: string | null
+          username?: string | null
+          wallet_address?: string | null
+          wallet_nonce?: string | null
+          wallet_verified?: boolean
+        }
+        Update: {
+          balance?: number
+          created_at?: string
+          first_name?: string | null
+          id?: number
+          language_code?: string | null
+          mining_pending?: number
+          mining_rate_daily?: number
+          mining_settled_at?: string | null
+          mining_started_at?: string | null
+          photo_url?: string | null
+          power_level?: number
+          referral_earned?: number
+          referral_rate?: number
+          referred_by?: number | null
+          subscribed_until?: string | null
+          username?: string | null
+          wallet_address?: string | null
+          wallet_nonce?: string | null
+          wallet_verified?: boolean
+        }
+        Relationships: []
+      }
+      orai_withdrawals: {
+        Row: {
+          amount: number
+          broadcast_boc: string | null
+          broadcast_error: string | null
+          broadcast_seqno: number | null
+          created_at: string
+          fee_tx: string | null
+          id: string
+          status: string
+          to_address: string
+          tx_hash: string | null
+          user_id: number
+        }
+        Insert: {
+          amount: number
+          broadcast_boc?: string | null
+          broadcast_error?: string | null
+          broadcast_seqno?: number | null
+          created_at?: string
+          fee_tx?: string | null
+          id?: string
+          status?: string
+          to_address: string
+          tx_hash?: string | null
+          user_id: number
+        }
+        Update: {
+          amount?: number
+          broadcast_boc?: string | null
+          broadcast_error?: string | null
+          broadcast_seqno?: number | null
+          created_at?: string
+          fee_tx?: string | null
+          id?: string
+          status?: string
+          to_address?: string
+          tx_hash?: string | null
+          user_id?: number
+        }
+        Relationships: []
+      }
       prize_broadcast_log: {
         Row: {
           delivered: boolean
@@ -1366,7 +1694,7 @@ export type Database = {
         }
         Relationships: []
       }
-      orai_tasks: {
+      tasks: {
         Row: {
           app_image_url: string | null
           app_name: string | null
@@ -1766,7 +2094,7 @@ export type Database = {
             foreignKeyName: "user_tasks_task_id_fkey"
             columns: ["task_id"]
             isOneToOne: false
-            referencedRelation: "orai_tasks"
+            referencedRelation: "tasks"
             referencedColumns: ["id"]
           },
           {
@@ -2118,6 +2446,26 @@ export type Database = {
           id: string
           telegram_id: number
         }[]
+      }
+      orange_campaign_lock: {
+        Args: { p_id: string; p_token: string }
+        Returns: boolean
+      }
+      orange_mining_claim: { Args: { p_user_id: number }; Returns: Json }
+      orange_payout_lock: { Args: { p_token: string }; Returns: boolean }
+      orange_refund_withdrawal: { Args: { p_id: string }; Returns: undefined }
+      orange_reserve_withdrawal: {
+        Args: {
+          p_address: string
+          p_amount: number
+          p_fee: string
+          p_user_id: number
+        }
+        Returns: string
+      }
+      orange_sync_power: {
+        Args: { p_level: number; p_rate: number; p_user_id: number }
+        Returns: undefined
       }
       perform_attack_for_telegram: {
         Args: {
