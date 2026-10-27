@@ -8,7 +8,7 @@ import banner from "@/assets/wallet-banner.jpg";
 const sameAddr = (a?: string | null, b?: string | null) => { if (!a || !b) return false; try { return Address.parse(a).equals(Address.parse(b)); } catch { return a === b; } };
 import { useStore } from "@/lib/store";
 import { getMarket, walletBalances, setWallet, requestWithdraw, checkWithdrawal, walletChallenge, proveWallet } from "@/lib/api.functions";
-import { MIN_WITHDRAW, PAYOUT_WALLET, RECEIVE_WALLET, WITHDRAW_FEE_GRAM } from "@/lib/config";
+import { MIN_WITHDRAW, RECEIVE_WALLET, WITHDRAW_FEE_ORAI, withdrawalDebit } from "@/lib/config";
 import { commentPayload, fmt, oraiTransferMessage } from "@/lib/ton";
 import { CoinIcon, GhostButton, GRAM_ICON, ORAI_ICON, PrimaryButton } from "@/components/ui-kit";
 import { Dialog, DialogContent, DialogTitle, DialogDescription } from "@/components/ui/dialog";
@@ -50,7 +50,7 @@ function WalletPage() {
    const n = Number(amount);
    if (!Number.isFinite(n) || n <= 0) return;
    if (!address) { await connect(); return; }
-   if (mode === "withdraw" && (n < MIN_WITHDRAW || n > Number(me.balance))) { toast.error(n < MIN_WITHDRAW ? `${t("minWithdraw")}: ${MIN_WITHDRAW} ORAI` : t("insufficient")); return; }
+   if (mode === "withdraw" && (n < MIN_WITHDRAW || withdrawalDebit(n) > Number(me.balance))) { toast.error(n < MIN_WITHDRAW ? `${t("minWithdraw")}: ${MIN_WITHDRAW} ORAI` : t("insufficient")); return; }
    setBusy(true);
    try {
      if (mode === "deposit") {
@@ -58,8 +58,7 @@ function WalletPage() {
        await tc.sendTransaction({ validUntil: Math.floor(Date.now() / 1000) + 600, messages: [msg] }); toast(t("pending"));
      } else {
        if (!me.wallet_verified || !sameAddr(address, me.wallet_address)) { await connect(); return; }
-       const preflight = await checkWithdrawal({ data: { initData, amount: n } });
-       if (!preflight.feePaid) await tc.sendTransaction({ validUntil: Math.floor(Date.now() / 1000) + 600, messages: [{ address: PAYOUT_WALLET, amount: toNano(String(WITHDRAW_FEE_GRAM)).toString(), payload: commentPayload(`fee:${me.id}`) }] });
+       await checkWithdrawal({ data: { initData, amount: n } });
        toast(t("pending")); const result = await requestWithdraw({ data: { initData, amount: n } }); patchMe({ balance: result.balance }); await refresh(); walletBalances({ data: { initData, address } }).then(setChain).catch(() => {}); toast(t("pending"));
      }
      setAmount(""); setMode(null);

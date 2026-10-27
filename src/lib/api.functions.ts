@@ -2,7 +2,7 @@ import { createServerFn } from "@tanstack/react-start";
 import {
   MINING_HOURS, POWER_LEVELS, REFERRAL_BONUS, MIN_WITHDRAW, ORAI_JETTON, GRAM_ADDRESS,
   RECEIVE_WALLET, PAYOUT_WALLET, WITHDRAW_FEE_GRAM, ADMIN_USERNAMES, NFT_COLLECTION_ADDRESS, NFT_PRICE_GRAM, NFT_TIERS, nftBenefits,
-  sessionReward, levelForHoldings, dailyOrai, MARKET_MAX_AGE, withdrawFeeOrai, autoWithdrawAmount,
+  sessionReward, levelForHoldings, dailyOrai, MARKET_MAX_AGE, withdrawalDebit,
 } from "./config";
 
 type Auth = { initData: string };
@@ -47,7 +47,6 @@ export const bootstrap = createServerFn({ method: "POST" })
     const { reconcilePayouts } = await import("./payout-queue.server");
     await reconcilePayouts(db, user.id);
     await syncPower(db, user.id);
-    await runAutoWithdraw(db, user.id).catch((e: unknown) => console.error("Auto withdrawal deferred", e));
     const [me, tasks, done, refs, wd] = await Promise.all([
       loadUser(db, user.id),
       db.from("orai_tasks").select("*").eq("active", true).order("sort"),
@@ -86,7 +85,6 @@ export const claimMining = createServerFn({ method: "POST" })
     const { data: result, error } = await db.rpc("orange_mining_claim", { p_user_id: user.id });
     if (error) throw new Error(error.message);
     await syncPower(db, user.id);
-    await runAutoWithdraw(db, user.id).catch((e: unknown) => console.error("Auto withdrawal deferred", e));
     return { ...await loadUser(db, user.id) };
   });
 
@@ -180,16 +178,12 @@ export const requestWithdraw = createServerFn({ method: "POST" })
     if (!Number.isFinite(data.amount) || data.amount < MIN_WITHDRAW || data.amount > 1e12) throw new Error(`Minimum is ${MIN_WITHDRAW} ORAI`);
     const me = await loadUser(db, user.id);
     if (!me.wallet_address || !me.wallet_verified) throw new Error("Verify wallet ownership first");
-    if (Number(me.balance) < data.amount) throw new Error("Not enough ORAI");
+    if (Number(me.balance) < withdrawalDebit(data.amount)) throw new Error("Not enough ORAI including fee");
     const { data: pending } = await db.from("orai_withdrawals").select("id").eq("user_id", user.id).in("status", ["pending", "submitted"]).limit(1);
     if (pending?.length) throw new Error("Your earlier withdrawal is still being confirmed");
     const { payoutPreflight } = await import("./payout.server");
     await payoutPreflight(data.amount, true);
-    const { data: previous } = await db.from("orai_withdrawals").select("fee_tx").eq("user_id", user.id);
-    const used = new Set((previous ?? []).map((row: any) => row.fee_tx));
-    const tx = await findPayment(`fee:${user.id}`, WITHDRAW_FEE_GRAM * 1e9, 8, used, PAYOUT_WALLET);
-    if (!tx) throw new Error("Fee payment not found yet. Wait a minute before retrying; do not pay twice.");
-    const { data: withdrawalId, error } = await db.rpc("orange_reserve_withdrawal", { p_user_id: user.id, p_amount: data.amount, p_fee: tx.hash, p_address: me.wallet_address });
+    const { data: withdrawalId, error } = await db.rpc("orange_paid_withdrawal", { p_user_id: user.id, p_amount: data.amount, p_address: me.wallet_address });
     if (error) throw new Error(error.message);
     const { processPayouts } = await import("./payout-queue.server");
     await processPayouts(db).catch((e: unknown) => console.error("Payout deferred", e));
@@ -418,16 +412,13 @@ export const proveWallet = createServerFn({ method: "POST" }).inputValidator((i:
 export const checkWithdrawal = createServerFn({ method: "POST" }).inputValidator((i: Auth & { amount: number }) => ({ ...auth(i), amount: Number(i.amount) })).handler(async ({ data }) => {
   const { user, db } = await ctx(data.initData);
   const me = await loadUser(db, user.id);
-  if (!Number.isFinite(data.amount) || data.amount < MIN_WITHDRAW || data.amount > Number(me.balance)) throw new Error("Not enough ORAI or below minimum withdrawal");
+  if (!Number.isFinite(data.amount) || data.amount < MIN_WITHDRAW || data.amount > 1e12 || withdrawalDebit(data.amount) > Number(me.balance)) throw new Error("Not enough ORAI including fee or below minimum withdrawal");
   const { payoutPreflight } = await import("./payout.server");
   if (!me.wallet_address || !me.wallet_verified) throw new Error("Verify wallet ownership first");
   const { data: pending } = await db.from("orai_withdrawals").select("id").eq("user_id", user.id).in("status", ["pending", "submitted"]).limit(1);
   if (pending?.length) throw new Error("Your earlier withdrawal is still being confirmed");
-  await payoutPreflight(data.amount, false);
-  const { data: previous } = await db.from("orai_withdrawals").select("fee_tx").eq("user_id", user.id);
-  const used = new Set((previous ?? []).map((row: any) => row.fee_tx));
-  const fee = await findPayment(`fee:${user.id}`, WITHDRAW_FEE_GRAM * 1e9, 1, used, PAYOUT_WALLET);
-  return { ok: true, feePaid: !!fee };
+  await payoutPreflight(data.amount, true);
+  return { ok: true };
 });
 
 /** Admin: retries minting every paid-but-unminted NFT. */

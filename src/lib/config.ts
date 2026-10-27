@@ -13,6 +13,7 @@ export function referralCommission(reward: number) { return reward * REFERRAL_CO
 export const MIN_WITHDRAW = 100;
 export const DECIMALS = 9;
 export const WITHDRAW_FEE_GRAM = 0.15;
+export const WITHDRAW_FEE_ORAI = 1;
 export const ADMIN_USERNAMES = ["eigiza"];
 export const NFT_COLLECTION_ADDRESS = "EQAUV6nlIAxPqWMy-vpuuTXu14bGyYJjeK7wgiqs0COnbv2X";
 export const NFT_COLLECTION_URL = "https://getgems.io/orangeai";
@@ -60,11 +61,7 @@ export function holdingsPower(appOrai: number, externalOrai: number, priceUsd: n
   return { balance: appOrai, holdings: Math.max(0, appOrai) + Math.max(0, externalOrai), power_level: levelForHoldings(appOrai + externalOrai, priceUsd) };
 }
 export function isAdminUsername(username?: string) { return ADMIN_USERNAMES.includes((username ?? "").toLowerCase()); }
-/** Automatic withdrawals pay the withdrawal fee from the in-app ORAI balance at live prices. */
-export function withdrawFeeOrai(gramUsd: number, oraiUsd: number) {
-  if (!(gramUsd > 0) || !(oraiUsd > 0)) return null;
-  return WITHDRAW_FEE_GRAM * gramUsd / oraiUsd;
-}
+export function withdrawalDebit(amount: number) { return amount + WITHDRAW_FEE_ORAI; }
 /** Largest payout that still covers its own fee and respects the user's own threshold. */
 export function autoWithdrawAmount(balance: number, threshold: number, feeOrai: number | null) {
   if (feeOrai === null || feeOrai <= 0) return 0;
