@@ -31,6 +31,7 @@ function Tasks() {
   const { data, t, x, initData, demo, setData, lang } = useStore();
   const [tab, setTab] = useState<"tasks" | "refs">("tasks");
   const [app, setApp] = useState<string | null>(null);
+  const [cat, setCat] = useState<"ours" | "partners" | "others">("ours");
   const [opened, setOpened] = useState<Record<string, boolean>>({});
   const waiting = useRef<any>(null);
   useEffect(() => {
@@ -42,7 +43,7 @@ function Tasks() {
   if (!data) return null;
   const me = data.me;
   const link = `https://t.me/${BOT_USERNAME}?start=ref_${me.id}`;
-  const pending = data.tasks.filter((task: any) => !data.done.includes(task.id));
+  const pending = data.tasks.filter((task: any) => !data.done.includes(task.id) && (task.app_category || "ours") === cat);
   const apps = new Map<string, { name: string; image: string | null; tasks: any[] }>();
   for (const task of pending) if (task.app_name) {
     const a = apps.get(task.app_name) ?? { name: task.app_name, image: task.app_image || task.image_url, tasks: [] as any[] };
@@ -75,6 +76,11 @@ function Tasks() {
     <div>
       <Segmented value={tab} onChange={setTab} options={[{ key: "tasks", label: t("tasksTab") }, { key: "refs", label: t("referralsTab") }]} />
 
+      {tab === "tasks" && <div className="mb-3"><Segmented value={cat} onChange={(v) => { setCat(v); setApp(null); }} options={[
+        { key: "ours", label: ar ? "مهامنا" : "Our tasks" },
+        { key: "partners", label: ar ? "الشركاء" : "Partners" },
+        { key: "others", label: ar ? "آخرون" : "Others" },
+      ]} /></div>}
       {tab === "tasks" ? (
         pending.length === 0
           ? <div className="rounded-2xl bg-card py-12 text-center text-sm font-bold text-muted-foreground">{x("allDone")}</div>

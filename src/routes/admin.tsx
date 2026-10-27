@@ -62,6 +62,7 @@ function AdminPage() {
   const [busy, setBusy] = useState(false);
   const [appName, setAppName] = useState("");
   const [image, setImage] = useState("");
+  const [category, setCategory] = useState("ours");
   function pickImage(f?: File) {
     if (!f) return;
     const img = new Image();
@@ -124,13 +125,18 @@ function AdminPage() {
         <PrimaryButton onClick={() => setAddingApp(v => !v)}>إضافة تطبيق</PrimaryButton>
         {addingApp && <div className="space-y-3">
           <input aria-label="اسم التطبيق" value={appName} onChange={e => setAppName(e.target.value)} placeholder="اسم التطبيق" className="h-12 w-full rounded-xl bg-card px-4" />
+          <select aria-label="القسم" value={category} onChange={e => setCategory(e.target.value)} className="h-12 w-full rounded-xl bg-card px-4">
+            <option value="ours">مهامنا</option>
+            <option value="partners">مهام الشركاء</option>
+            <option value="others">آخرون</option>
+          </select>
           <label className="flex cursor-pointer items-center gap-3 rounded-xl bg-card p-3">
             {image && <img src={image} alt="" className="size-12 rounded-xl object-cover" />}
             صورة التطبيق<input type="file" accept="image/*" className="hidden" onChange={e => pickImage(e.target.files?.[0])} />
           </label>
           <PrimaryButton disabled={busy || !appName.trim() || !image} onClick={async () => {
             setBusy(true);
-            try { await adminAddApp({ data: { initData, name: appName, image } }); setAppName(""); setImage(""); setAddingApp(false); await load(); }
+            try { await adminAddApp({ data: { initData, name: appName, image, category } }); setAppName(""); setImage(""); setAddingApp(false); await load(); }
             catch(e) { toast.error(e instanceof Error ? e.message : "Error"); } finally { setBusy(false); }
           }}>{t("save")}</PrimaryButton>
         </div>}

@@ -314,14 +314,15 @@ export const adminOverview = createServerFn({ method: "POST" })
   });
 
 export const adminAddApp = createServerFn({ method: "POST" })
-  .inputValidator((i: Auth & { name: string; image: string }) => {
+  .inputValidator((i: Auth & { name: string; image: string; category?: string }) => {
     const name = String(i.name ?? "").trim().slice(0, 60);
     const image = String(i.image ?? "");
+    const category = ["ours", "partners", "others"].includes(String(i.category)) ? String(i.category) : "ours";
     if (!name || !/^data:image\/(jpeg|png|webp);base64,[A-Za-z0-9+/=]+$/.test(image) || image.length > 120000) throw new Error("Invalid application name or image");
-    return { ...auth(i), name, image };
+    return { ...auth(i), name, image, category };
   }).handler(async ({ data }) => {
     const { db } = await adminCtx(data.initData);
-    const { error } = await db.from("orai_task_apps").insert({ name: data.name, image: data.image });
+    const { error } = await db.from("orai_task_apps").insert({ name: data.name, image: data.image, category: data.category } as any);
     if (error) throw new Error(error.message);
     return { ok: true };
   });
@@ -341,7 +342,7 @@ export const adminAddTask = createServerFn({ method: "POST" })
     const { translateTitle } = await import("./translate.server");
     const title_i18n = await translateTitle(data.title);
     const { error } = await db.from("orai_tasks").insert({ title: data.title, link: data.link, reward: 0, kind, chat_id: priv ? `-100${priv[1]}` : null, title_i18n,
-      app_id: app.id, app_name: app.name, app_image: app.image, image_url: app.image });
+      app_id: app.id, app_name: app.name, app_image: app.image, image_url: app.image, app_category: (app as any).category ?? "ours" } as any);
     if (error) throw new Error(error.message);
     return { ok: true };
   });

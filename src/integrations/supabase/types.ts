@@ -760,18 +760,21 @@ export type Database = {
       }
       orai_task_apps: {
         Row: {
+          category: string
           created_at: string
           id: string
           image: string
           name: string
         }
         Insert: {
+          category?: string
           created_at?: string
           id?: string
           image: string
           name: string
         }
         Update: {
+          category?: string
           created_at?: string
           id?: string
           image?: string
@@ -808,6 +811,7 @@ export type Database = {
       orai_tasks: {
         Row: {
           active: boolean
+          app_category: string
           app_id: string | null
           app_image: string | null
           app_name: string | null
@@ -824,6 +828,7 @@ export type Database = {
         }
         Insert: {
           active?: boolean
+          app_category?: string
           app_id?: string | null
           app_image?: string | null
           app_name?: string | null
@@ -840,6 +845,7 @@ export type Database = {
         }
         Update: {
           active?: boolean
+          app_category?: string
           app_id?: string | null
           app_image?: string | null
           app_name?: string | null
