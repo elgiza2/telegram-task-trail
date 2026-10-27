@@ -850,6 +850,35 @@ export type Database = {
         }
         Relationships: []
       }
+      orai_referral_goals: {
+        Row: {
+          claimed_at: string
+          goal: number
+          reward: number
+          user_id: number
+        }
+        Insert: {
+          claimed_at?: string
+          goal: number
+          reward: number
+          user_id: number
+        }
+        Update: {
+          claimed_at?: string
+          goal?: number
+          reward?: number
+          user_id?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "orai_referral_goals_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "orai_tg_users"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       orai_task_apps: {
         Row: {
           category: string
@@ -2648,6 +2677,10 @@ export type Database = {
           isOneToOne: true
           isSetofReturn: false
         }
+      }
+      orai_claim_referral_goal: {
+        Args: { p_goal: number; p_user_id: number }
+        Returns: number
       }
       orai_daily_tickets: { Args: { p_user: number }; Returns: number }
       orai_grant_tickets: {

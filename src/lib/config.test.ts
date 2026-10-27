@@ -31,9 +31,9 @@ describe("withdrawal fees", () => {
 
 import { NFT_TIERS, nftBenefits } from "./config";
 describe("NFT tiers", () => {
-  it("has 10 tiers with rising price and mining boost", () => {
-    expect(NFT_TIERS).toHaveLength(10);
-    for (let i = 1; i < 10; i++) { expect(NFT_TIERS[i]!.price).toBeGreaterThan(NFT_TIERS[i - 1]!.price); expect(NFT_TIERS[i]!.mining).toBeGreaterThan(NFT_TIERS[i - 1]!.mining); }
+  it("has 6 tiers with rising price and mining boost", () => {
+    expect(NFT_TIERS).toHaveLength(6);
+    for (let i = 1; i < 6; i++) { expect(NFT_TIERS[i]!.price).toBeGreaterThan(NFT_TIERS[i - 1]!.price); expect(NFT_TIERS[i]!.mining).toBeGreaterThan(NFT_TIERS[i - 1]!.mining); }
   });
   it("uses the best owned tier, not stacking", () => {
     expect(nftBenefits([])).toEqual({ mining: 1, referralRate: 0.1, tasks: 1 });
@@ -42,8 +42,13 @@ describe("NFT tiers", () => {
   });
 });
 describe("NFT prices", () => {
-  it("start at 2 GRAM", () => { expect(NFT_TIERS[0]!.price).toBe(2); });
+  it("start at 10 GRAM and end at 10000", () => { expect(NFT_TIERS[0]!.price).toBe(10); expect(NFT_TIERS.at(-1)!.price).toBe(10000); });
 });
 describe("daily yield", () => {
   it("$50 holding earns $25 per day", () => { expect(POWER_LEVELS.find(l => l.price === 50)!.perDay).toBe(25); });
+});
+import { REFERRAL_GOALS } from "./config";
+describe("referral friend goals", () => {
+  it("20 friends pays 200 ORAI", () => expect(REFERRAL_GOALS[0]).toEqual({ goal: 20, reward: 200 }));
+  it("100 friends pays 1500 ORAI", () => expect(REFERRAL_GOALS.at(-1)).toEqual({ goal: 100, reward: 1500 }));
 });
