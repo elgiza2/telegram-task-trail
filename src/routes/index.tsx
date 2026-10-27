@@ -1,4 +1,5 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { PowerSection } from "@/components/PowerSection";
+import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useState, type ReactNode } from "react";
 import { toast } from "sonner";
 import { useStore } from "@/lib/store";
@@ -58,9 +59,9 @@ function Home() {
     <div className="mt-5 text-sm text-muted-foreground">{t("balance")}</div>
     <div className="mt-2 flex max-w-full items-center justify-center gap-2 break-all text-4xl tabular-nums"><CoinIcon src={ORAI_ICON} className="size-8" />{fmt(Number(me.balance) + mined, 4)}</div>
     <span className="mt-1 text-sm text-muted-foreground">ORAI</span>
-    <Link to="/power" search={{ tab: "nft" }} className="mt-6 flex w-full items-center justify-between rounded-2xl bg-card px-4 py-3 text-sm"><span className="flex items-center gap-2"><CoinIcon src={ORAI_ICON} className="size-6" />Orange NFT</span><span className="text-muted-foreground">→</span></Link>
     <div className="mt-5 w-full">
       {started === null || done ? <PrimaryButton onClick={act} disabled={busy}>{done ? `${t("claim")} +${fmt(mined, 4)} ORAI` : t("startMining")}</PrimaryButton> : <div className="rounded-2xl bg-accent py-4 text-primary">+{fmt(mined, 4)} ORAI</div>}
     </div>
+    <div className="mt-8 w-full text-start"><PowerSection /></div>
   </div>;
 }
