@@ -15,7 +15,7 @@ export const prepareShareMessage = createServerFn({ method: "POST" })
         photo_url: `${APP_URL}/start-banner.jpg`, thumbnail_url: `${APP_URL}/start-banner.jpg`,
         caption: "<b>Join my Orange crew</b>\nMine ORAI, complete tasks and play games together.",
         parse_mode: "HTML",
-        reply_markup: { inline_keyboard: [[{ text: "Open Orange", url: link }]] },
+        reply_markup: { inline_keyboard: [[{ style: "primary", text: "Open Orange", url: link }]] },
       },
       allow_user_chats: true, allow_group_chats: true,
     });
