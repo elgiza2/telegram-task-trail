@@ -47,3 +47,5 @@
 - [ ] NFT cards without emoji; new NFT art; auto mint via Getgems API
 - [ ] New wallet page image
 - [ ] Real GRAM/ORAI price from STON API
+- [ ] Fix navigation lag + smooth page transition
+- [ ] NFT images from our characters

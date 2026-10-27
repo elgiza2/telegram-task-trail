@@ -86,13 +86,13 @@
 .nav-item[data-active=true] { flex-basis: 112px; }
 .nav-label { max-width: 0; opacity: 0; overflow: hidden; transition: max-width 360ms ease, opacity 260ms ease; white-space: nowrap; }
 .nav-item[data-active=true] .nav-label { max-width: 80px; opacity: 1; }
-.page-motion { animation: page-enter 300ms ease both; }
+.page-motion { animation: page-enter 260ms cubic-bezier(.2,.8,.2,1) both; will-change: opacity, transform; }
 .lucky-wheel { background: conic-gradient(from -30deg, var(--game-yellow) 0deg 60deg, var(--game-coral) 60deg 120deg, var(--game-violet) 120deg 180deg, var(--game-sky) 180deg 240deg, var(--game-mint) 240deg 300deg, var(--game-pink) 300deg 360deg); box-shadow: var(--shadow-glass); }
 .game-cover { background: var(--game-blue); box-shadow: var(--shadow-glass); }
 .game-cover-shade { background: linear-gradient(to top, var(--game-ink), transparent 60%); }
 .game-cover-badge { color: var(--foreground); background: var(--glass-strong); backdrop-filter: blur(12px); }
 .spin-banner { background: var(--game-yellow); color: var(--game-ink); }
-@keyframes page-enter { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+@keyframes page-enter { from { opacity: 0; transform: translateY(10px) scale(.985); } to { opacity: 1; transform: none; } }
 @media (prefers-reduced-motion: reduce) { .nav-item, .nav-label { transition: none; } .page-motion { animation: none; } }
 
 @layer base {
