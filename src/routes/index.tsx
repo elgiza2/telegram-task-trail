@@ -7,7 +7,7 @@ import { startMining, claimMining } from "@/lib/api.functions";
 import { MINING_HOURS } from "@/lib/config";
 import { fmt } from "@/lib/ton";
 import { haptic } from "@/lib/telegram";
-import { CoinIcon, ORAI_ICON, PrimaryButton } from "@/components/ui-kit";
+import { CoinIcon, ORAI_ICON, PrimaryButton, GhostButton } from "@/components/ui-kit";
 import mascot from "@/assets/orange-captain.jpg.asset.json";
 
 export const Route = createFileRoute("/")({ ssr: false, head: () => ({ meta: [
@@ -34,6 +34,7 @@ function Home() {
   const { data, t, initData, demo, patchMe } = useStore();
   const [now, setNow] = useState(Date.now());
   const [busy, setBusy] = useState(false);
+  const [collectibles, setCollectibles] = useState(false);
   useEffect(() => { const timer = setInterval(() => setNow(Date.now()), 1000); return () => clearInterval(timer); }, []);
   if (!data) return null;
   const me = data.me;
@@ -63,6 +64,6 @@ function Home() {
     <div className="mt-5 w-full">
       {started === null || done ? <PrimaryButton onClick={act} disabled={busy}>{done ? `${t("claim")} +${fmt(mined, 4)} ORAI` : t("startMining")}</PrimaryButton> : <div className="rounded-2xl bg-accent py-4 text-primary">+{fmt(mined, 4)} ORAI</div>}
     </div>
-    <div className="mt-7 w-full border-t border-border pt-5 text-start"><h2 className="mb-4 text-lg">Your Orange collectibles</h2><PowerSection /></div>
+    <div className="mt-7 w-full border-t border-border pt-5 text-start"><GhostButton className="flex w-full items-center justify-between" aria-expanded={collectibles} onClick={()=>setCollectibles(v=>!v)}><span>Orange collectibles</span><span>{collectibles ? "−" : "+"}</span></GhostButton>{collectibles && <div className="mt-4"><PowerSection /></div>}</div>
   </div>;
 }
