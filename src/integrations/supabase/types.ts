@@ -901,6 +901,7 @@ export type Database = {
           first_name: string | null
           id: number
           language_code: string | null
+          mining_claim_count: number
           mining_pending: number
           mining_rate_daily: number
           mining_settled_at: string | null
@@ -908,7 +909,10 @@ export type Database = {
           photo_url: string | null
           power_level: number
           referral_earned: number
+          referral_mining_paid: boolean
           referral_rate: number
+          referral_signup_paid: boolean
+          referral_wallet_paid: boolean
           referred_by: number | null
           starter_credit_applied: boolean
           subscribed_until: string | null
@@ -923,6 +927,7 @@ export type Database = {
           first_name?: string | null
           id: number
           language_code?: string | null
+          mining_claim_count?: number
           mining_pending?: number
           mining_rate_daily?: number
           mining_settled_at?: string | null
@@ -930,7 +935,10 @@ export type Database = {
           photo_url?: string | null
           power_level?: number
           referral_earned?: number
+          referral_mining_paid?: boolean
           referral_rate?: number
+          referral_signup_paid?: boolean
+          referral_wallet_paid?: boolean
           referred_by?: number | null
           starter_credit_applied?: boolean
           subscribed_until?: string | null
@@ -945,6 +953,7 @@ export type Database = {
           first_name?: string | null
           id?: number
           language_code?: string | null
+          mining_claim_count?: number
           mining_pending?: number
           mining_rate_daily?: number
           mining_settled_at?: string | null
@@ -952,7 +961,10 @@ export type Database = {
           photo_url?: string | null
           power_level?: number
           referral_earned?: number
+          referral_mining_paid?: boolean
           referral_rate?: number
+          referral_signup_paid?: boolean
+          referral_wallet_paid?: boolean
           referred_by?: number | null
           starter_credit_applied?: boolean
           subscribed_until?: string | null

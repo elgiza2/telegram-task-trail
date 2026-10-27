@@ -37,10 +37,7 @@ export const bootstrap = createServerFn({ method: "POST" })
       const ref = startParam?.startsWith("ref_") ? Number(startParam.slice(4)) : null;
       const referred_by = ref && ref !== user.id ? ref : null;
       await db.from("orai_tg_users").insert({ ...profile, referred_by });
-      if (referred_by) {
-        const { data: r } = await db.from("orai_tg_users").select("balance").eq("id", referred_by).maybeSingle();
-        if (r) await db.from("orai_tg_users").update({ balance: Number(r.balance) + REFERRAL_BONUS }).eq("id", referred_by);
-      }
+
     } else {
       await db.from("orai_tg_users").update(profile).eq("id", user.id);
     }
@@ -51,7 +48,7 @@ export const bootstrap = createServerFn({ method: "POST" })
       loadUser(db, user.id),
       db.from("orai_tasks").select("*").eq("active", true).order("sort"),
       db.from("orai_task_completions").select("task_id").eq("user_id", user.id),
-      db.from("orai_tg_users").select("id, first_name, username").eq("referred_by", user.id).limit(100),
+      db.from("orai_tg_users").select("id, first_name, username, referral_signup_paid, referral_wallet_paid, referral_mining_paid, mining_claim_count").eq("referred_by", user.id).limit(100),
       db.from("orai_withdrawals").select("*").eq("user_id", user.id).order("created_at", { ascending: false }).limit(20),
     ]);
     return {
