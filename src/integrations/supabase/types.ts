@@ -671,6 +671,47 @@ export type Database = {
         }
         Relationships: []
       }
+      orai_arcade_rounds: {
+        Row: {
+          created_at: string
+          game: string
+          id: string
+          score: number
+          state: Json
+          status: string
+          updated_at: string
+          user_id: number
+        }
+        Insert: {
+          created_at?: string
+          game: string
+          id?: string
+          score?: number
+          state?: Json
+          status?: string
+          updated_at?: string
+          user_id: number
+        }
+        Update: {
+          created_at?: string
+          game?: string
+          id?: string
+          score?: number
+          state?: Json
+          status?: string
+          updated_at?: string
+          user_id?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "orai_arcade_rounds_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "orai_tg_users"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       orai_bot_campaigns: {
         Row: {
           created_at: string
@@ -943,6 +984,8 @@ export type Database = {
           referred_by: number | null
           starter_credit_applied: boolean
           subscribed_until: string | null
+          tickets: number
+          tickets_daily_at: string | null
           username: string | null
           wallet_address: string | null
           wallet_nonce: string | null
@@ -969,6 +1012,8 @@ export type Database = {
           referred_by?: number | null
           starter_credit_applied?: boolean
           subscribed_until?: string | null
+          tickets?: number
+          tickets_daily_at?: string | null
           username?: string | null
           wallet_address?: string | null
           wallet_nonce?: string | null
@@ -995,12 +1040,49 @@ export type Database = {
           referred_by?: number | null
           starter_credit_applied?: boolean
           subscribed_until?: string | null
+          tickets?: number
+          tickets_daily_at?: string | null
           username?: string | null
           wallet_address?: string | null
           wallet_nonce?: string | null
           wallet_verified?: boolean
         }
         Relationships: []
+      }
+      orai_ticket_events: {
+        Row: {
+          amount: number
+          created_at: string
+          id: string
+          source: string
+          source_key: string
+          user_id: number
+        }
+        Insert: {
+          amount: number
+          created_at?: string
+          id?: string
+          source: string
+          source_key: string
+          user_id: number
+        }
+        Update: {
+          amount?: number
+          created_at?: string
+          id?: string
+          source?: string
+          source_key?: string
+          user_id?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "orai_ticket_events_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "orai_tg_users"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       orai_withdrawals: {
         Row: {
@@ -2521,6 +2603,61 @@ export type Database = {
           id: string
           telegram_id: number
         }[]
+      }
+      orai_arcade_start: {
+        Args: { p_game: string; p_state: Json; p_user: number }
+        Returns: {
+          created_at: string
+          game: string
+          id: string
+          score: number
+          state: Json
+          status: string
+          updated_at: string
+          user_id: number
+        }
+        SetofOptions: {
+          from: "*"
+          to: "orai_arcade_rounds"
+          isOneToOne: true
+          isSetofReturn: false
+        }
+      }
+      orai_arcade_update: {
+        Args: {
+          p_id: string
+          p_score: number
+          p_state: Json
+          p_status: string
+          p_user: number
+          p_version: string
+        }
+        Returns: {
+          created_at: string
+          game: string
+          id: string
+          score: number
+          state: Json
+          status: string
+          updated_at: string
+          user_id: number
+        }
+        SetofOptions: {
+          from: "*"
+          to: "orai_arcade_rounds"
+          isOneToOne: true
+          isSetofReturn: false
+        }
+      }
+      orai_daily_tickets: { Args: { p_user: number }; Returns: number }
+      orai_grant_tickets: {
+        Args: {
+          p_amount: number
+          p_key: string
+          p_source: string
+          p_user: number
+        }
+        Returns: undefined
       }
       orange_campaign_lock: {
         Args: { p_id: string; p_token: string }
