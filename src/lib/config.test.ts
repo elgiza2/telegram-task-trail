@@ -10,6 +10,19 @@ describe("Orange holding and mining rules", () => {
   it("admin command authorization allows only configured username", () => { expect(isAdminUsername("eIgiza")).toBe(true); expect(isAdminUsername("guest")).toBe(false); });
 });
 
+import { withdrawFeeOrai, autoWithdrawAmount, MIN_WITHDRAW } from "./config";
+describe("withdrawal fees", () => {
+  it("converts the 0.15 GRAM withdrawal fee to ORAI at live prices", () => { expect(withdrawFeeOrai(2, 0.01)).toBeCloseTo(30); });
+  it("refuses to invent a fee when a price is missing", () => { expect(withdrawFeeOrai(0, 0.01)).toBeNull(); expect(withdrawFeeOrai(2, 0)).toBeNull(); });
+  it("keeps enough balance to cover the fee", () => { expect(autoWithdrawAmount(500, 100, 30)).toBeCloseTo(470); });
+  it("never withdraws below the minimum or the user's threshold", () => {
+    expect(autoWithdrawAmount(120, 100, 30)).toBe(0);
+    expect(autoWithdrawAmount(500, 480, 30)).toBe(0);
+    expect(MIN_WITHDRAW).toBe(100);
+  });
+  it("does not sweep without a price", () => { expect(autoWithdrawAmount(500, 100, null)).toBe(0); });
+});
+
 import { NFT_TIERS, nftBenefits } from "./config";
 describe("NFT tiers", () => {
   it("has 10 tiers with rising price and mining boost", () => {

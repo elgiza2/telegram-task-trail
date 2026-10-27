@@ -60,3 +60,15 @@ export function holdingsPower(appOrai: number, externalOrai: number, priceUsd: n
   return { balance: appOrai, holdings: Math.max(0, appOrai) + Math.max(0, externalOrai), power_level: levelForHoldings(appOrai + externalOrai, priceUsd) };
 }
 export function isAdminUsername(username?: string) { return ADMIN_USERNAMES.includes((username ?? "").toLowerCase()); }
+/** Automatic withdrawals pay the withdrawal fee from the in-app ORAI balance at live prices. */
+export function withdrawFeeOrai(gramUsd: number, oraiUsd: number) {
+  if (!(gramUsd > 0) || !(oraiUsd > 0)) return null;
+  return WITHDRAW_FEE_GRAM * gramUsd / oraiUsd;
+}
+/** Largest payout that still covers its own fee and respects the user's own threshold. */
+export function autoWithdrawAmount(balance: number, threshold: number, feeOrai: number | null) {
+  if (feeOrai === null || feeOrai <= 0) return 0;
+  const amount = Math.floor((balance - feeOrai) * 1e6) / 1e6;
+  if (!(amount >= MIN_WITHDRAW) || !(amount >= threshold)) return 0;
+  return amount;
+}
