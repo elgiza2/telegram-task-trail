@@ -1,4 +1,11 @@
 import { describe, it, expect } from "vitest";
+import { REFERRAL_STAGES, referralStageEligible, adsPermitWithdrawal } from "./config";
+describe("referral stages and ad requirement", () => {
+ it("pays signup portion of five ORAI", () => { expect(REFERRAL_STAGES.signup).toBe(5); });
+ it("wallet portion requires ownership verification", () => { expect(REFERRAL_STAGES.wallet).toBe(10); expect(referralStageEligible("wallet", false, 0)).toBe(false); expect(referralStageEligible("wallet", true, 0)).toBe(true); });
+ it("mining portion requires two completed claims", () => { expect(REFERRAL_STAGES.mining).toBe(10); expect(referralStageEligible("mining", false, 1)).toBe(false); expect(referralStageEligible("mining", false, 2)).toBe(true); });
+ it("requires five confirmed ads", () => { expect(adsPermitWithdrawal(4)).toBe(false); expect(adsPermitWithdrawal(5)).toBe(true); });
+});
 import { POWER_LEVELS, MINING_HOURS, levelForHoldings, dailyOrai, miningAccrued, holdingsPower, isAdminUsername, referralCommission } from "./config";
 describe("Orange holding and mining rules", () => {
   it("referrers earn an additional 10% without deducting invitee rewards", () => { const reward = 100; expect(referralCommission(reward)).toBe(10); expect(reward).toBe(100); });

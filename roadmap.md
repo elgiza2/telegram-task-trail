@@ -1,6 +1,6 @@
 # Roadmap
-- [ ] Connect Monetag zone 11951290 with consent and verified reward callbacks; suggest other providers
-- [ ] Split 25 ORAI referral bonus: 5 at signup, 10 after wallet ownership verification, 10 after two mining claims
+- [ ] Monetag zone 11951290 consent UI and verified callback implemented; awaiting dashboard postback setup and live verification
+- [x] Split 25 ORAI referral bonus: 5 at signup, 10 after wallet ownership verification, 10 after two mining claims
 - [ ] Monetag opt-in rewarded ads and ad tasks; advise nonintrusive format and collect zone code; withdrawal requires 5 provider-verified ad views (click condition only if provider permits incentivized clicks)
 - [x] Redesign mining and compact animated glass navigation; monochrome controls, preserve artwork colors
 - [x] Configure 2000 ORAI starter credit exactly once (connected orai_tg_users is currently empty)

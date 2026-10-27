@@ -11,7 +11,7 @@ async function loadSdk() {
  if(w.show_11951290) return w.show_11951290;
  await new Promise<void>((resolve,reject)=>{
  const old = document.getElementById("monetag-sdk"); if(old) old.remove();
- const script = document.createElement("script"); script.id="monetag-sdk"; script.src="https://libtl.com/sdk.js"; script.dataset.zone="11951290"; script.dataset.sdk="show_11951290"; script.onload=()=>resolve(); script.onerror=()=>{script.remove();reject(new Error("الإعلان غير متاح دلوقتي"));}; document.head.appendChild(script);
+ const script = document.createElement("script"); script.id="monetag-sdk"; script.src="https://libtl.com/sdk.js"; script.dataset['zone']="11951290"; script.dataset['sdk']="show_11951290"; script.onload=()=>resolve(); script.onerror=()=>{script.remove();reject(new Error("الإعلان غير متاح دلوقتي"));}; document.head.appendChild(script);
  });
  if(!w.show_11951290) throw new Error("الإعلان غير متاح دلوقتي");
  return w.show_11951290;

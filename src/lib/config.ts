@@ -8,6 +8,12 @@ export const MINING_HOURS = 2;
 export const DAILY_YIELD = 0.5;
 export const BASE_ORAI_PER_DAY = 0.1;
 export const REFERRAL_BONUS = 25;
+export const REFERRAL_STAGES = { signup: 5, wallet: 10, mining: 10 } as const;
+export const REQUIRED_AD_VIEWS = 5;
+export function referralStageEligible(stage: keyof typeof REFERRAL_STAGES, verified: boolean, claims: number) {
+  return stage === "signup" || (stage === "wallet" ? verified : claims >= 2);
+}
+export function adsPermitWithdrawal(confirmed: number) { return confirmed >= REQUIRED_AD_VIEWS; }
 export const REFERRAL_COMMISSION = 0.10;
 export function referralCommission(reward: number) { return reward * REFERRAL_COMMISSION; }
 export const MIN_WITHDRAW = 100;
