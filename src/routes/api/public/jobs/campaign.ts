@@ -7,8 +7,7 @@ export const Route = createFileRoute("/api/public/jobs/campaign")({ server: { ha
   POST: async ({ request }) => {
     const failure = await authenticateCronRequest(request);
     if (failure) return failure;
-    const token = process.env["TELEGRAM_BOT_TOKEN"];
-    if (!token) return Response.json({ ok: false }, { status: 503 });
+    const { telegramApi, APP_URL } = await import("@/lib/telegram-api.server");
     const body = await request.json().catch(() => null);
     if (!body || typeof body.campaignId !== "string") return new Response("Invalid campaign", { status: 400 });
     const { supabaseAdmin: db } = await import("@/integrations/supabase/client.server");
@@ -25,12 +24,11 @@ export const Route = createFileRoute("/api/public/jobs/campaign")({ server: { ha
     // Sequential delivery preserves a precise cursor. An unknown HTTP outcome pauses
     // rather than re-sending a message that Telegram may already have accepted.
     for (const user of users ?? []) {
-      const message = messages[pickLang(user.language_code)] ?? messages["en"];
+      const message = messages["en"];
       if (!message) break;
       let result: { ok?: boolean; error_code?: number; description?: string; parameters?: { retry_after?: number } };
       try {
-        const response = await fetch(`https://api.telegram.org/bot${token}/sendMessage`, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ chat_id: user.id, text: `<b>${message[0]}</b>`, parse_mode: "HTML", reply_markup: { inline_keyboard: [[{ text: message[1], web_app: { url: "https://botkey-telegram-bridge.lovable.app" } }]] } }) });
-        result = await response.json();
+        result = await telegramApi("sendMessage", { chat_id: user.id, text: `<b>${message[0]}</b>`, parse_mode: "HTML", reply_markup: { inline_keyboard: [[{ text: message[1], web_app: { url: APP_URL } }]] } });
       } catch {
         await db.from("orai_bot_campaigns").update({ status: "paused", pause_reason: `Unknown delivery outcome after user ${cursor}; manual review required` }).eq("id", campaign.id).eq("lease_token", lease);
         return Response.json({ paused: true });

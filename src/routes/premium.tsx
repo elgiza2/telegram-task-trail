@@ -33,11 +33,7 @@ function Premium() {
       toast(t("pending"));
     } catch (e: any) { toast.error(e.message); } finally { setBusy(false); }
   }
-  const sections = ar ? [
-    { h: "ميزة بريميوم", p: "بريميوم يضاعف سرعة التعدين الخاصة بك (×2) لمدة 30 يومًا كاملة. كل ما تعدّنه خلال فترة الاشتراك يُحسب بضعف المعدل المعتاد." },
-    { h: "السعر", p: `الاشتراك ${SUB_PRICE_GRAM} GRAM لكل 30 يومًا. الدفع يتم مباشرة من محفظتك عبر TON Connect، ويُفعّل الاشتراك تلقائيًا بعد تأكيد الدفع على الشبكة.` },
-    { h: "التفعيل", p: "اربط محفظتك، اضغط زر الاشتراك، ووقّع المعاملة. بعد دقائق اضغط زر الاستلام ليتحقق النظام من الدفع ويفعّل بريميوم على حسابك." },
-  ] : [
+  const sections = [
     { h: "Premium benefit", p: "Premium doubles your mining speed (×2) for a full 30 days. Everything you mine during the subscription counts at twice the usual rate." },
     { h: "Price", p: `The subscription is ${SUB_PRICE_GRAM} GRAM per 30 days. Payment is made directly from your wallet via TON Connect and activates automatically once confirmed on-chain.` },
     { h: "Activation", p: "Connect your wallet, tap subscribe and sign the transaction. After a few minutes tap claim — the system verifies the payment and activates Premium on your account." },
