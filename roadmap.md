@@ -1,4 +1,7 @@
 # Roadmap
+- [ ] Current request: withdrawal conditions dialog with ad viewing, app balance instead of holdings, completed tasks hidden, notification placement, new character wallet/referral art; defer automatic NFT minting
+- [ ] Verify automatic payout safety and report live-transfer blockers without spending funds
+- [ ] Publish this request on Vercel only; do not publish Lovable
 - [x] Refine translucent iOS-inspired controls without crowding the redesigned pages
 - [x] Keep redesigned pages uncluttered; collapse secondary collectible details
 - [x] Remove Power control and legacy holding-tier presentation from Mining without changing financial rules implicitly
