@@ -1,6 +1,6 @@
 import { ORAI_JETTON, GRAM_ADDRESS, MARKET_MAX_AGE } from "./config";
 export async function marketSnapshot(db: any, force = false) {
-  const { data: cached } = await db.from("market_snapshots").select("*").eq("id", "orai").maybeSingle();
+  const { data: cached } = await db.from("orai_market_snapshots").select("*").eq("id", "orai").maybeSingle();
   if (!force && cached && Date.now() - new Date(cached.updated_at).getTime() < MARKET_MAX_AGE) return cached.data;
   const get = async (addr: string) => {
     const response = await fetch(`https://api.ston.fi/v1/assets/${addr}`);
@@ -25,7 +25,7 @@ export async function marketSnapshot(db: any, force = false) {
     const [orai, gram] = await Promise.all([withFallback(ORAI_JETTON, ORAI_JETTON), withFallback(GRAM_ADDRESS, "EQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAM9c")]);
     if (!Number.isFinite(orai.priceUsd) || orai.priceUsd <= 0) throw new Error("ORAI price unavailable");
     const result = { orai: { ...orai, symbol: "ORAI", name: orai.name || "Orange AI" }, gram: { ...gram, symbol: "GRAM", name: "Gram" }, updatedAt: new Date().toISOString(), stale: false };
-    const { error } = await db.from("market_snapshots").upsert({ id: "orai", data: result, updated_at: result.updatedAt });
+    const { error } = await db.from("orai_market_snapshots").upsert({ id: "orai", data: result, updated_at: result.updatedAt });
     if (error) throw new Error(error.message);
     return result;
   } catch (error) {

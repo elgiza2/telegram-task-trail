@@ -1366,7 +1366,7 @@ export type Database = {
         }
         Relationships: []
       }
-      tasks: {
+      orai_tasks: {
         Row: {
           app_image_url: string | null
           app_name: string | null
@@ -1766,7 +1766,7 @@ export type Database = {
             foreignKeyName: "user_tasks_task_id_fkey"
             columns: ["task_id"]
             isOneToOne: false
-            referencedRelation: "tasks"
+            referencedRelation: "orai_tasks"
             referencedColumns: ["id"]
           },
           {
