@@ -51,17 +51,18 @@ function Home() {
     try { const result = done ? await claimMining({ data: { initData } }) : await startMining({ data: { initData } }); patchMe(result); haptic("success"); }
     catch (error: any) { toast.error(error.message); } finally { setBusy(false); }
   }
-  return <div className="flex flex-col items-center pt-6 text-center">
+  return <div className="flex flex-col items-center pt-2 text-center">
+    <header className="mb-6 flex w-full items-center justify-between"><h1 className="text-xl font-semibold">Orange</h1><span className="text-xs text-muted-foreground">ORAI · {t("mining")}</span></header>
     <MiningRing progress={started === null ? 0 : elapsed / total}>
       <img src={me.photo_url || mascot.url} alt="" className="size-40 rounded-full object-cover" />
     </MiningRing>
     {started !== null && !done && <div className="mt-3 text-sm tabular-nums text-muted-foreground">{clock}</div>}
     <div className="mt-5 text-sm text-muted-foreground">{t("balance")}</div>
-    <div className="mt-2 flex max-w-full items-center justify-center gap-2 break-all text-4xl tabular-nums"><CoinIcon src={ORAI_ICON} className="size-8" />{fmt(Number(me.balance) + mined, 4)}</div>
+    <div className="mt-2 flex max-w-full items-center justify-center gap-2 break-all text-3xl tabular-nums"><CoinIcon src={ORAI_ICON} className="size-8" />{fmt(Number(me.balance), 2)}</div>
     <span className="mt-1 text-sm text-muted-foreground">ORAI</span>
     <div className="mt-5 w-full">
       {started === null || done ? <PrimaryButton onClick={act} disabled={busy}>{done ? `${t("claim")} +${fmt(mined, 4)} ORAI` : t("startMining")}</PrimaryButton> : <div className="rounded-2xl bg-accent py-4 text-primary">+{fmt(mined, 4)} ORAI</div>}
     </div>
-    <div className="mt-8 w-full text-start"><PowerSection /></div>
+    <div className="mt-7 w-full border-t border-border pt-5 text-start"><PowerSection /></div>
   </div>;
 }

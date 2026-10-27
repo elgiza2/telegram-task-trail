@@ -438,3 +438,16 @@ export const adminMintPending = createServerFn({ method: "POST" })
     }
     return { minted, pending: (rows?.length ?? 0) - minted };
   });
+
+export const spinDaily = createServerFn({ method: "POST" }).inputValidator(auth).handler(async ({ data }) => {
+  const { user, db } = await ctx(data.initData);
+  const { data: result, error } = await db.rpc("orange_spin_daily", { p_user_id: user.id });
+  if (error) throw new Error(error.message);
+  return result as { reward: number; balance: number; nextSpinAt: string };
+});
+export const gameStatus = createServerFn({ method: "POST" }).inputValidator(auth).handler(async ({ data }) => {
+  const { user, db } = await ctx(data.initData);
+  const { data: row, error } = await db.from("orai_game_spins").select("last_spun_at").eq("user_id", user.id).maybeSingle();
+  if (error) throw new Error(error.message);
+  return { nextSpinAt: row?.last_spun_at ? new Date(new Date(row.last_spun_at).getTime() + 86400000).toISOString() : null };
+});

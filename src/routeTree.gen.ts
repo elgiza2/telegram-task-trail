@@ -12,6 +12,7 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AboutRouteImport } from './routes/about'
 import { Route as AdminRouteImport } from './routes/admin'
+import { Route as GamesRouteImport } from './routes/games'
 import { Route as GuideRouteImport } from './routes/guide'
 import { Route as NftRouteImport } from './routes/nft'
 import { Route as PowerRouteImport } from './routes/power'
@@ -43,6 +44,11 @@ const AboutRoute = AboutRouteImport.update({
 const AdminRoute = AdminRouteImport.update({
   id: '/admin',
   path: '/admin',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const GamesRoute = GamesRouteImport.update({
+  id: '/games',
+  path: '/games',
   getParentRoute: () => rootRouteImport,
 } as any)
 const GuideRoute = GuideRouteImport.update({
@@ -136,6 +142,7 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
   '/admin': typeof AdminRoute
+  '/games': typeof GamesRoute
   '/guide': typeof GuideRoute
   '/nft': typeof NftRoute
   '/power': typeof PowerRoute
@@ -158,6 +165,7 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
   '/admin': typeof AdminRoute
+  '/games': typeof GamesRoute
   '/guide': typeof GuideRoute
   '/nft': typeof NftRoute
   '/power': typeof PowerRoute
@@ -181,6 +189,7 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
   '/admin': typeof AdminRoute
+  '/games': typeof GamesRoute
   '/guide': typeof GuideRoute
   '/nft': typeof NftRoute
   '/power': typeof PowerRoute
@@ -205,6 +214,7 @@ export interface FileRouteTypes {
     | '/'
     | '/about'
     | '/admin'
+    | '/games'
     | '/guide'
     | '/nft'
     | '/power'
@@ -227,6 +237,7 @@ export interface FileRouteTypes {
     | '/'
     | '/about'
     | '/admin'
+    | '/games'
     | '/guide'
     | '/nft'
     | '/power'
@@ -249,6 +260,7 @@ export interface FileRouteTypes {
     | '/'
     | '/about'
     | '/admin'
+    | '/games'
     | '/guide'
     | '/nft'
     | '/power'
@@ -272,6 +284,7 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AboutRoute: typeof AboutRoute
   AdminRoute: typeof AdminRoute
+  GamesRoute: typeof GamesRoute
   GuideRoute: typeof GuideRoute
   NftRoute: typeof NftRoute
   PowerRoute: typeof PowerRoute
@@ -312,6 +325,13 @@ declare module '@tanstack/react-router' {
       path: '/admin'
       fullPath: '/admin'
       preLoaderRoute: typeof AdminRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/games': {
+      id: '/games'
+      path: '/games'
+      fullPath: '/games'
+      preLoaderRoute: typeof GamesRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/guide': {
@@ -440,6 +460,7 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AboutRoute: AboutRoute,
   AdminRoute: AdminRoute,
+  GamesRoute: GamesRoute,
   GuideRoute: GuideRoute,
   NftRoute: NftRoute,
   PowerRoute: PowerRoute,
