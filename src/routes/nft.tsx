@@ -10,6 +10,6 @@ export const Route = createFileRoute("/nft")({
     { name: "twitter:card", content: "summary_large_image" },
   ] }),
   beforeLoad: () => {
-    throw redirect({ to: "/power", search: { tab: "nft" } });
+    throw redirect({ to: "/" });
   },
 });
