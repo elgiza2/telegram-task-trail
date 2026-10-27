@@ -40,4 +40,9 @@ export const arcadeMove = createServerFn({method:"POST"}).inputValidator((i:unkn
  else if(r.game==="higher") { if(data.choice===-1 || data.choice===1){const next=1+random(13);const won=higherWins(s['card'],next,data.choice);s['card']=next;if(won){score+=100;if(score>=1000)status="won";}else status="lost";}else throw new Error("Choose higher or lower"); }
  else { if(data.choice>3 || data.choice<0)throw new Error("Invalid tile");s['picks']=[...s['picks'],data.choice];if(!memoryMatches(s['sequence'],s['picks']))status="lost";else if(s['picks'].length===s['sequence'].length){score+=100;if(s['sequence'].length>=10)status="won";else{s['sequence']=[...s['sequence'],random(4)];s['picks']=[];}} }
  const {data:updated,error:writeError}=await db.rpc("orai_arcade_update",{p_user:user.id,p_id:r.id,p_version:r.updated_at,p_state:s,p_score:score,p_status:status}); if(writeError || !updated)throw new Error("Round updated. Please try again.");return visible(updated as Round);
+});export const gameBoard = createServerFn({method:"POST"}).inputValidator((i:unknown)=>auth.extend({game:z.enum(["crash","mines","higher","memory"])}).parse(i)).handler(async({data})=>{
+ const {verifyInitData}=await import("./tg-auth.server"); const {user}=await verifyInitData(data.initData); const {supabaseAdmin:db}=await import("@/integrations/supabase/client.server");
+ const [top,mine]=await Promise.all([(db as any).rpc("orai_arcade_leaderboard",{p_game:data.game}), db.from("orai_arcade_rounds").select("score,status,created_at").eq("user_id",user.id).eq("game",data.game).neq("status","playing").order("created_at",{ascending:false}).limit(10)]);
+ if(top.error) throw new Error("Unable to load leaderboard");
+ return { top:(top.data??[]) as {user_id:number;first_name:string|null;username:string|null;photo_url:string|null;best:number}[], history:(mine.data??[]) as {score:number;status:string;created_at:string}[] };
 });
