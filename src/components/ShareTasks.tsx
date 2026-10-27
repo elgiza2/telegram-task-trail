@@ -5,16 +5,18 @@ import msgImg from "@/assets/task-message.jpg";
 import { useStore } from "@/lib/store";
 import { getWebApp } from "@/lib/telegram";
 import { prepareShareMessage } from "@/lib/share.functions";
-import { GhostButton } from "@/components/ui-kit";
+import { TaskRow } from "@/components/TaskRow";
 
 const APP = "https://orangeorai.vercel.app";
 
-export function ShareTasks() {
+export function ShareTasks({ onClaim }: { onClaim: (task: any) => Promise<void> }) {
   const { data, initData, demo } = useStore();
   const prepare = useServerFn(prepareShareMessage);
   if (!data) return null;
   const link = `https://t.me/sramaibot?start=ref_${data.me.id}`;
   const wa = getWebApp();
+  const find = (kind: string) => data.tasks.find((t: any) => t.kind === kind && !data.done.includes(t.id));
+  const storyTask = find("story"), shareTask = find("share");
 
   function story() {
     if (demo || !wa?.shareToStory) { toast("Open Orange in Telegram to share a story."); return; }
@@ -22,21 +24,17 @@ export function ShareTasks() {
       text: `Mining ORAI on Orange. Join my crew: ${link}`,
       widget_link: { url: link, name: "Open Orange" },
     });
+    if (storyTask) setTimeout(() => void onClaim(storyTask), 1500);
   }
   async function message() {
     if (demo || !wa?.shareMessage) { toast("Open Orange in Telegram to share."); return; }
-    try { const r = await prepare({ data: { initData } }); wa.shareMessage(r.id, (sent: boolean) => sent && toast.success("Shared")); }
-    catch (e) { toast.error(e instanceof Error ? e.message : "Please try again"); }
+    try {
+      const r = await prepare({ data: { initData } });
+      wa.shareMessage(r.id, (sent: boolean) => { if (sent && shareTask) void onClaim(shareTask); });
+    } catch (e) { toast.error(e instanceof Error ? e.message : "Please try again"); }
   }
-  const row = (img: string, title: string, onClick: () => void) => (
-    <GhostButton onClick={onClick} className="flex h-auto w-full items-center gap-3 p-3 text-start">
-      <img src={img} alt="" loading="lazy" className="size-12 shrink-0 rounded-2xl object-cover" />
-      <span className="min-w-0 flex-1 text-sm">{title}</span>
-      <span className="rounded-full bg-primary px-3 py-1 text-xs text-primary-foreground">Go</span>
-    </GhostButton>
-  );
-  return <div className="mb-3 space-y-3">
-    {row(storyImg, "Share Orange to your story", story)}
-    {row(msgImg, "Send Orange to 3 friends", message)}
-  </div>;
+  return <>
+    {storyTask && <TaskRow image={storyImg} title="Share Orange to your story" reward={Number(storyTask.reward)} onClick={story} />}
+    {shareTask && <TaskRow image={msgImg} title="Send Orange to 3 friends" reward={Number(shareTask.reward)} onClick={message} />}
+  </>;
 }

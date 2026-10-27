@@ -321,11 +321,12 @@ export const adminAddApp = createServerFn({ method: "POST" })
   });
 
 export const adminAddTask = createServerFn({ method: "POST" })
-  .inputValidator((i: Auth & { title: string; link: string; appId: string }) => {
+  .inputValidator((i: Auth & { title: string; link: string; appId: string; reward?: number }) => {
     const title = String(i.title ?? "").trim().slice(0, 120);
     const link = String(i.link ?? "").trim();
     if (!title || link.length > 300 || new URL(link).protocol !== "https:") throw new Error("Invalid task name or link");
-    return { ...auth(i), title, link, appId: String(i.appId) };
+    const reward = Math.max(0, Math.min(100000, Number(i.reward ?? 0) || 0));
+    return { ...auth(i), title, link, appId: String(i.appId), reward };
   }).handler(async ({ data }) => {
     const { db } = await adminCtx(data.initData);
     const { data: app, error: appError } = await db.from("orai_task_apps").select("*").eq("id", data.appId).single();
@@ -334,8 +335,38 @@ export const adminAddTask = createServerFn({ method: "POST" })
     const kind = /ston\.fi/i.test(data.link) ? "ston" : priv ? "channel" : "link";
     const { translateTitle } = await import("./translate.server");
     const title_i18n = await translateTitle(data.title);
-    const { error } = await db.from("orai_tasks").insert({ title: data.title, link: data.link, reward: 0, kind, chat_id: priv ? `-100${priv[1]}` : null, title_i18n,
+    const { error } = await db.from("orai_tasks").insert({ title: data.title, link: data.link, reward: data.reward, kind, chat_id: priv ? `-100${priv[1]}` : null, title_i18n,
       app_id: app.id, app_name: app.name, app_image: app.image, image_url: app.image, app_category: (app as any).category ?? "ours" } as any);
+    if (error) throw new Error(error.message);
+    return { ok: true };
+  });
+
+export const adminUpdateTask = createServerFn({ method: "POST" })
+  .inputValidator((i: Auth & { taskId: string; title: string; link: string; reward: number }) => {
+    const title = String(i.title ?? "").trim().slice(0, 120);
+    const link = String(i.link ?? "").trim();
+    const reward = Number(i.reward);
+    if (!title || link.length > 300 || new URL(link).protocol !== "https:") throw new Error("Invalid task name or link");
+    if (!Number.isFinite(reward) || reward < 0 || reward > 100000) throw new Error("Invalid reward");
+    return { ...auth(i), taskId: String(i.taskId), title, link, reward };
+  }).handler(async ({ data }) => {
+    const { db } = await adminCtx(data.initData);
+    const { data: old } = await db.from("orai_tasks").select("title").eq("id", data.taskId).single();
+    const patch: any = { link: data.link, reward: data.reward, title: data.title };
+    if (old && old.title !== data.title) { const { translateTitle } = await import("./translate.server"); patch.title_i18n = await translateTitle(data.title); }
+    const { error } = await db.from("orai_tasks").update(patch).eq("id", data.taskId);
+    if (error) throw new Error(error.message);
+    return { ok: true };
+  });
+
+export const adminDeleteTask = createServerFn({ method: "POST" })
+  .inputValidator((i: Auth & { taskId: string }) => ({ ...auth(i), taskId: String(i.taskId) }))
+  .handler(async ({ data }) => {
+    const { db } = await adminCtx(data.initData);
+    const { data: t } = await db.from("orai_tasks").select("kind").eq("id", data.taskId).single();
+    if (t && ["story", "share"].includes(t.kind)) throw new Error("Built-in share tasks can be edited or hidden, not deleted");
+    await db.from("orai_task_completions").delete().eq("task_id", data.taskId);
+    const { error } = await db.from("orai_tasks").delete().eq("id", data.taskId);
     if (error) throw new Error(error.message);
     return { ok: true };
   });
