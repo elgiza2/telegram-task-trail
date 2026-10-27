@@ -93,9 +93,14 @@ export const completeTask = createServerFn({ method: "POST" })
   .inputValidator((i: Auth & { taskId: string }) => ({ ...auth(i), taskId: String(i.taskId) }))
   .handler(async ({ data }) => {
     const { user, db } = await ctx(data.initData);
-    const { data: task } = await db.from("orai_tasks").select("*").eq("id", data.taskId).single();
+    const { data: task } = await db.from("orai_tasks").select("*").eq("id", data.taskId).eq("active", true).single();
     if (!task) throw new Error("Task not found");
     // Real verification per task kind.
+    if (task.kind === "tiger_case_free") {
+      const { verifyTigerCaseFreeOpen } = await import("./tiger-case.server");
+      const verified = await verifyTigerCaseFreeOpen(user.id, process.env["TIGER_CASE_API_KEY"]);
+      if (!verified) throw new Error("TASK_NOT_VERIFIED");
+    }
     const match = String(task.link).match(/(?:^|\/\/)t\.me\/([A-Za-z0-9_]{5,})/);
     const chat = task.chat_id || (match && !String(task.link).includes("?") ? `@${match[1]}` : null);
     if (chat) {
