@@ -7,8 +7,8 @@ function random(max: number) { const a = new Uint32Array(1); crypto.getRandomVal
 function visible(r: Round) {
  const s = r.state;
  return { id:r.id, game:r.game as ArcadeGame, status:r.status, score:r.score, startedAt:r.created_at,
-  card: Number(s.card ?? 1), opened: (s.opened ?? []) as number[], sequence: r.game === "memory" ? s.sequence as number[] : [],
-  multiplier: Number(s.multiplier ?? 1), mines: r.status !== "playing" ? (s.mines ?? []) as number[] : [], };
+  card: Number(s['card'] ?? 1), opened: (s['opened'] ?? []) as number[], sequence: r.game === "memory" ? s['sequence'] as number[] : [],
+  multiplier: Number(s['multiplier'] ?? 1), mines: r.status !== "playing" ? (s['mines'] ?? []) as number[] : [], };
 }
 export const arcadeStatus = createServerFn({ method:"POST" }).inputValidator((i: unknown)=>auth.parse(i)).handler(async({data})=>{
  const { verifyInitData } = await import("./tg-auth.server"); const {user}=await verifyInitData(data.initData);
@@ -35,9 +35,9 @@ export const arcadeMove = createServerFn({method:"POST"}).inputValidator((i:unkn
  const r=row as Round; if(r.status!=="playing")return visible(r);
  const s={...r.state}; let status="playing", score=r.score;
  if(data.choice===-2 || Date.now()-Date.parse(r.created_at)>600000)status="ended";
- else if(r.game==="crash") { const value=crashValue(Date.now()-Date.parse(r.created_at));s.multiplier=Math.min(value,Number(s.limit)); if(value>=Number(s.limit))status="lost"; else if(data.choice===-1){status="won";score=Math.floor(value*100);} }
- else if(r.game==="mines") { if(data.choice===-1){status="won";}else{if(s.opened.includes(data.choice))return visible(r);s.opened=[...s.opened,data.choice]; if(s.mines.includes(data.choice))status="lost";else{score+=100;if(s.opened.length===13)status="won";}} }
- else if(r.game==="higher") { if(data.choice===-1 || data.choice===1){const next=1+random(13);const won=higherWins(s.card,next,data.choice);s.card=next;if(won){score+=100;if(score>=1000)status="won";}else status="lost";}else throw new Error("Choose higher or lower"); }
- else { if(data.choice>3 || data.choice<0)throw new Error("Invalid tile");s.picks=[...s.picks,data.choice];if(!memoryMatches(s.sequence,s.picks))status="lost";else if(s.picks.length===s.sequence.length){score+=100;if(s.sequence.length>=10)status="won";else{s.sequence=[...s.sequence,random(4)];s.picks=[];}} }
+ else if(r.game==="crash") { const value=crashValue(Date.now()-Date.parse(r.created_at));s['multiplier']=Math.min(value,Number(s['limit'])); if(value>=Number(s['limit']))status="lost"; else if(data.choice===-1){status="won";score=Math.floor(value*100);} }
+ else if(r.game==="mines") { if(data.choice===-1){status="won";}else{if(s['opened'].includes(data.choice))return visible(r);s['opened']=[...s['opened'],data.choice]; if(s['mines'].includes(data.choice))status="lost";else{score+=100;if(s['opened'].length===13)status="won";}} }
+ else if(r.game==="higher") { if(data.choice===-1 || data.choice===1){const next=1+random(13);const won=higherWins(s['card'],next,data.choice);s['card']=next;if(won){score+=100;if(score>=1000)status="won";}else status="lost";}else throw new Error("Choose higher or lower"); }
+ else { if(data.choice>3 || data.choice<0)throw new Error("Invalid tile");s['picks']=[...s['picks'],data.choice];if(!memoryMatches(s['sequence'],s['picks']))status="lost";else if(s['picks'].length===s['sequence'].length){score+=100;if(s['sequence'].length>=10)status="won";else{s['sequence']=[...s['sequence'],random(4)];s['picks']=[];}} }
  const {data:updated,error:writeError}=await db.rpc("orai_arcade_update",{p_user:user.id,p_id:r.id,p_version:r.updated_at,p_state:s,p_score:score,p_status:status}); if(writeError || !updated)throw new Error("Round updated. Please try again.");return visible(updated as Round);
 });

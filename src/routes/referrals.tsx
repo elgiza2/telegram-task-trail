@@ -1,54 +1,11 @@
-import { createFileRoute } from "@tanstack/react-router";
-import { toast } from "sonner";
-import { useStore } from "@/lib/store";
-import { REFERRAL_BONUS } from "@/lib/config";
-import { fmt } from "@/lib/ton";
-import invitation from "@/assets/referral-invitation.jpg";
-import { shareReferral } from "@/lib/referral-share";
-import { GhostButton, PrimaryButton } from "@/components/ui-kit";
-
-export const Route = createFileRoute("/referrals")({
-  ssr: false,
-  head: () => ({
-    meta: [
-      { title: "Orange — Invite friends" },
-      { name: "description", content: "Invite friends to Orange and earn ORAI from their mining." },
-      { property: "og:title", content: "Orange — Invite friends" },
-      { property: "og:description", content: "Invite friends to Orange and earn ORAI from their mining." },
-      { property: "og:type", content: "website" },
-      { name: "twitter:card", content: "summary_large_image" },
-    ],
-  }),
-  component: Referrals,
-});
-
-const BOT_USERNAME = "sramaibot";
-
-function Referrals() {
-  const { data, t, lang } = useStore();
-  if (!data) return null;
-  const me = data.me;
-  const ar = lang === "ar";
-  const link = `https://t.me/${BOT_USERNAME}?start=ref_${me.id}`;
-  return (
-    <div className="space-y-4">
-      <img src={invitation} alt={t("inviteFriends")} className="aspect-[3/2] w-full rounded-3xl object-cover" />
-      <div className="grid grid-cols-2 gap-3">
-        <div className="rounded-2xl bg-card p-4 text-center"><div className="text-2xl font-bold tabular-nums">{data.referrals.length}</div><div className="mt-1 text-xs text-muted-foreground">{t("friends")}</div></div>
-        <div className="rounded-2xl bg-card p-4 text-center"><div className="truncate text-2xl font-bold tabular-nums text-primary" dir="ltr">{fmt(Number(me.referral_earned ?? 0), 2)}</div><div className="mt-1 text-xs text-muted-foreground">ORAI</div></div>
-      </div>
-      <p className="px-2 text-center text-sm text-muted-foreground">{ar ? `اربح 10% من تعدين أصدقائك + ${REFERRAL_BONUS} ORAI لكل دعوة` : `Earn 10% of friends' mining + ${REFERRAL_BONUS} ORAI per invite`}</p>
-      <div className="divide-y divide-border border-y border-border">{[{label: ar ? "دخول صديقك" : "Friend joins", amount: 5}, {label: ar ? "تأكيد ملكية المحفظة" : "Wallet verified", amount: 10}, {label: ar ? "استلام التعدين مرتين" : "Two mining claims", amount: 10}].map(stage => <div key={stage.label} className="flex justify-between py-3 text-sm"><span>{stage.label}</span><span dir="ltr">+{stage.amount} ORAI</span></div>)}</div>
-      <PrimaryButton onClick={() => shareReferral(invitation, link, lang).catch(() => toast.error(t("pending")))}>{t("inviteFriends")}</PrimaryButton>
-      <GhostButton className="w-full font-bold" onClick={() => { navigator.clipboard.writeText(link); toast(t("copied")); }}>{t("copyLink")}</GhostButton>
-      {data.referrals.length > 0 && <div className="overflow-hidden rounded-2xl bg-card">
-        {data.referrals.map((r: any, i: number) => (
-          <div key={r.id} className={`flex items-center gap-3 px-4 py-3 ${i ? "border-t border-muted" : ""}`}>
-            <div className="flex size-9 items-center justify-center rounded-full bg-accent text-sm font-bold text-accent-foreground">{(r.first_name || r.username || "?").slice(0, 1).toUpperCase()}</div>
-            <div className="min-w-0 flex-1"><div className="truncate font-bold">{r.first_name || r.username}</div><div className="mt-1 text-xs text-muted-foreground">{[r.referral_signup_paid, r.referral_wallet_paid, r.referral_mining_paid].filter(Boolean).length}/3 · {ar ? "مراحل مكتملة" : "stages completed"}</div></div>
-          </div>
-        ))}
-      </div>}
-    </div>
-  );
+import { createFileRoute } from '@tanstack/react-router';
+import { toast } from 'sonner';
+import { Users, Coins, Copy, ArrowUpRight, Ticket, Check, Wallet, Pickaxe, UserPlus } from 'lucide-react';
+import { useStore } from '@/lib/store';
+import { fmt } from '@/lib/ton';
+import team from '@/assets/orange-team.jpg.asset.json';
+import { GhostButton, PrimaryButton } from '@/components/ui-kit';
+export const Route=createFileRoute('/referrals')({ssr:false,head:()=>({meta:[{title:'Orange — Friends & Rewards'},{name:'description',content:'Earn ORAI and play tickets as your friends join, verify a wallet and mine.'},{property:'og:title',content:'Orange — Friends & Rewards'},{property:'og:description',content:'Three milestones. More adventures together.'},{property:'og:type',content:'website'},{name:'twitter:card',content:'summary_large_image'}]}),component:Referrals});
+function Referrals(){const {data}=useStore();if(!data)return null;const me=data.me,link=`https://t.me/sramaibot?start=ref_${me.id}`;const stages=[{name:'Your friend joins',amount:5,tickets:1,icon:UserPlus},{name:'They verify their wallet',amount:10,tickets:2,icon:Wallet},{name:'They claim mining twice',amount:10,tickets:3,icon:Pickaxe}];
+ return <div className="space-y-5 pt-2"><header><p className="text-xs text-muted-foreground">BETTER TOGETHER</p><h1 className="mt-1 text-3xl">Friends & rewards</h1></header><img src={team.url} alt="The Orange crew together" className="aspect-[16/9] w-full rounded-lg object-cover"/><div className="grid grid-cols-2 divide-x divide-border border-y border-border py-4"><div className="text-center"><Users className="mx-auto mb-2 size-5"/><p className="text-2xl tabular-nums">{data.referrals.length}</p><p className="mt-1 text-xs text-muted-foreground">Friends invited</p></div><div className="text-center"><Coins className="mx-auto mb-2 size-5"/><p className="text-2xl tabular-nums">{fmt(Number(me.referral_earned??0),2)}</p><p className="mt-1 text-xs text-muted-foreground">ORAI earned</p></div></div><div className="flex items-center justify-between"><h2 className="text-lg">Every milestone counts</h2><span className="flex items-center gap-1 text-xs"><Ticket className="size-3"/>6 tickets</span></div><div className="divide-y divide-border">{stages.map((s,i)=><div key={s.name} className="flex items-center gap-3 py-4"><div className="flex size-10 shrink-0 items-center justify-center rounded-full bg-muted"><s.icon className="size-4"/></div><div className="min-w-0 flex-1"><p className="text-sm">{s.name}</p><p className="mt-1 text-xs text-muted-foreground">Milestone {i+1} · awarded once</p></div><div className="text-right text-sm"><p>+{s.amount} ORAI</p><p className="mt-1 text-xs text-muted-foreground">+{s.tickets} tickets</p></div></div>)}</div><p className="text-sm text-muted-foreground">Plus 10% of your friends’ mining rewards.</p><PrimaryButton onClick={()=>window.open(`https://t.me/share/url?url=${encodeURIComponent(link)}&text=${encodeURIComponent('Join my Orange crew. Mine ORAI and play together!')}`,'_blank','noopener,noreferrer')}><Users className="mr-2 inline size-4"/>Invite a friend <ArrowUpRight className="ml-2 inline size-4"/></PrimaryButton><GhostButton className="flex w-full items-center justify-center gap-2" onClick={()=>navigator.clipboard.writeText(link).then(()=>toast.success('Invite link copied')).catch(()=>toast.error('Unable to copy link'))}><Copy className="size-4"/>Copy invite link</GhostButton><section className="border-t border-border pt-4"><h2 className="mb-3 text-lg">Your crew</h2>{data.referrals.length===0?<p className="py-4 text-sm text-muted-foreground">Your first adventure together starts with an invite.</p>:data.referrals.map((r:any)=>{const count=[r.referral_signup_paid,r.referral_wallet_paid,r.referral_mining_paid].filter(Boolean).length;return <div key={r.id} className="flex items-center gap-3 border-b border-border py-3"><span className="flex size-10 items-center justify-center rounded-full bg-muted">{(r.first_name||r.username||'?').slice(0,1)}</span><div className="min-w-0 flex-1"><p className="truncate text-sm">{r.first_name||r.username}</p><p className="mt-1 text-xs text-muted-foreground">{count}/3 milestones completed</p></div>{count===3?<Check className="size-4"/>:<span className="text-xs text-muted-foreground">In progress</span>}</div>;})}</section></div>;
 }
