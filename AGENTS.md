@@ -19,10 +19,13 @@
 - External balances grant power only after nonce-bound TON proof, with one eligible binding per wallet; why: arbitrary wallet addresses must not grant rewards.
 - Market snapshots persist in Cloud and refresh via authenticated hourly callback; failures retain the last snapshot without applying new levels. Why: no invented or zero prices on provider outages.
 - Payout signing validates the configured wallet address and uses the correct wallet contract version; submissions use query IDs and on-chain reconciliation, with atomic reservations. Why: do not mark broadcast as confirmed or refund ambiguous broadcasts.
-- Profile is the fifth tab; /swap permanently redirects to /profile. Why: preserve the old published URL while keeping current navigation.
+- Navigation exposes mining, tasks, games, referrals and wallet; inactive tabs are icon-only and the active tab expands. Why: keep navigation compact.
 - Vercel, if enabled, is only a reverse-proxy front door to the Lovable deployment. Why: preserve the managed runtime, Telegram verification and Cloud secrets without exporting privileged credentials.
 - NFT collectible metadata artwork stays separate from rectangular display artwork; referral sharing uses its own imported image. Why: presentation changes must not change minted item metadata.
 - Application records own task images; task creation resolves the selected application server-side. Why: prevent inconsistent task branding.
 - Bot campaigns use durable keyset cursors, leases and pause on unknown delivery outcomes. Why: include every registered recipient without unsafe blind replays.
 - Payout processing persists signed messages before broadcasting and serializes the shared wallet; legacy ambiguous payouts require trace review before re-signing. Why: avoid duplicate transfers and seqno collisions.
 - Withdrawal fees are debited atomically with the requested payout in the service-role withdrawal RPC; the connected wallet never pays a separate fee transaction. Why: prevent double charges and enforce the chosen fee currency.
+
+- Starter credit is awarded by an insert trigger and an idempotent migration marker. Why: existing and future accounts receive the credit exactly once.
+- Rewarded daily wheel uses a locked database transaction and persisted cooldown; rocket practice never modifies financial balances. Why: prevent replayed rewards and unsafe client-side gambling settlement.
