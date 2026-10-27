@@ -1,7 +1,7 @@
 import { useEffect } from "react";
 import { Link, Outlet, useLocation, useRouter } from "@tanstack/react-router";
 import { TonConnectUIProvider } from "@tonconnect/ui-react";
-import { House, Gift, Users, Wallet } from "lucide-react";
+import { House, Gift, Users, Wallet, Gamepad2 } from "lucide-react";
 import { StoreProvider, useStore } from "@/lib/store";
 import { getWebApp } from "@/lib/telegram";
 import { Toaster } from "@/components/ui/sonner";
@@ -11,6 +11,7 @@ const tabs = [
   { to: "/", icon: House, key: "home" },
   { to: "/tasks", icon: Gift, key: "tasks" },
   { to: "/referrals", icon: Users, key: "referralsTab" },
+  { to: "/games", icon: Gamepad2, key: "games" },
   { to: "/wallet", icon: Wallet, key: "wallet" },
 ] as const;
 
@@ -46,16 +47,17 @@ function Frame() {
       {demo && (
         <div className="glass mb-3 rounded-2xl px-4 py-2 text-center text-xs text-muted-foreground">{t("openInTelegram")}</div>
       )}
-      <Outlet />
+      <div key={pathname} className="page-motion"><Outlet /></div>
       <nav className="safe-bottom fixed inset-x-0 bottom-0 z-40 mx-auto max-w-md px-5">
-        <div className="glass-strong grid grid-cols-4 gap-2 rounded-[26px] p-2">
+        <div className="glass-strong flex items-center justify-between gap-1 rounded-full p-1.5">
           {tabs.map(({ to, icon: Icon, key }) => {
             const active = pathname === to;
             return (
               <Link key={to} to={to}
-                className={`flex h-14 min-w-0 flex-col items-center justify-center gap-1 rounded-[18px] transition ${active ? "bg-primary text-primary-foreground shadow-sm" : "text-muted-foreground"}`}>
-                <Icon className="size-[22px]" strokeWidth={2.2} />
-                <span className="w-full truncate px-0.5 text-center text-[10px] font-bold leading-none">{t(key)}</span>
+                aria-label={key === "games" ? "الألعاب" : t(key)} aria-current={active ? "page" : undefined} data-active={active}
+                className={`nav-item flex h-11 min-w-0 items-center justify-center gap-2 rounded-full transition ${active ? "bg-primary text-primary-foreground shadow-sm" : "text-muted-foreground"}`}>
+                <Icon className="size-5 shrink-0" strokeWidth={2.2} />
+                <span className="nav-label text-xs font-semibold">{key === "games" ? "الألعاب" : t(key)}</span>
               </Link>
             );
           })}
