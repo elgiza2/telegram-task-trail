@@ -67,23 +67,18 @@ export function NftTab() {
   return (
     <div className="space-y-5">
       <GhostButton className="flex w-full items-center justify-between rounded-lg" onClick={() => openLink(NFT_COLLECTION_URL)}><span>Orange · Getgems</span><ArrowUpRight className="size-4" /></GhostButton>
-      <div className="space-y-5">
+      <div className="grid grid-cols-2 gap-3">
         {NFT_TIERS.map((n) => (
-          <Card key={n.tier} className={`overflow-hidden rounded-lg p-2 ${ownedTiers.includes(n.tier) ? "ring-2 ring-primary" : ""}`}>
-            <img src={NFT_IMAGES[n.tier - 1]} alt={n.name} loading="lazy" className="aspect-[3/1] w-full rounded-lg object-cover" />
-            <div className="p-4">
-              <div className="flex flex-wrap items-center justify-between gap-2"><h2 className="text-lg font-bold">{n.name}</h2><span className="flex items-center gap-1.5 text-sm font-bold" dir="ltr"><CoinIcon src={GRAM_ICON} className="size-4" />{n.price} GRAM</span></div>
-              <p className="mt-1.5 text-sm text-muted-foreground">{NFT_DESCRIPTIONS[n.tier - 1]?.[ar ? 0 : 1]}</p>
-              <dl className="my-4 grid grid-cols-3 divide-x divide-input border-y border-input py-3 text-center">
-                <div><dd className="text-lg font-bold text-primary" dir="ltr">+{Math.round(n.mining * 100)}%</dd><dt className="mt-1 text-xs text-muted-foreground">{ar ? "التعدين" : "Mining"}</dt></div>
-                <div><dd className="text-lg font-bold" dir="ltr">+{Math.round(n.referral * 100)}%</dd><dt className="mt-1 text-xs text-muted-foreground">{ar ? "الإحالة" : "Referral"}</dt></div>
-                <div><dd className="text-lg font-bold" dir="ltr">×{n.tasks.toFixed(2)}</dd><dt className="mt-1 text-xs text-muted-foreground">{ar ? "المهام" : "Tasks"}</dt></div>
-              </dl>
-              <PrimaryButton className="h-11 rounded-lg text-sm" onClick={() => buy(n)} disabled={busy !== null}>
-                {busy === n.tier ? t("pending") : `${ar ? "شراء" : "Buy"} · ${n.price} GRAM`}
+          <div key={n.tier} className={`glass overflow-hidden rounded-3xl text-start ${ownedTiers.includes(n.tier) ? "ring-2 ring-primary" : ""}`}>
+            <div className="relative"><img src={NFT_IMAGES[n.tier - 1]} alt={n.name} loading="lazy" className="aspect-square w-full object-cover" /><span className="absolute left-2 top-2 rounded-full bg-background/70 px-2 py-0.5 text-[10px] backdrop-blur">#{n.tier}</span>{ownedTiers.includes(n.tier) && <span className="absolute right-2 top-2 rounded-full bg-primary px-2 py-0.5 text-[10px] text-primary-foreground">Owned</span>}</div>
+            <div className="space-y-2 p-3">
+              <h2 className="truncate text-sm font-bold">{n.name}</h2>
+              <div className="flex gap-1.5 text-[10px] text-muted-foreground" dir="ltr"><span className="rounded-full bg-muted px-2 py-0.5">⛏ +{Math.round(n.mining * 100)}%</span><span className="rounded-full bg-muted px-2 py-0.5">👥 +{Math.round(n.referral * 100)}%</span></div>
+              <PrimaryButton className="flex h-9 items-center justify-center gap-1 rounded-full text-xs" onClick={() => buy(n)} disabled={busy !== null}>
+                {busy === n.tier ? t("pending") : <><CoinIcon src={GRAM_ICON} className="size-3.5" />{n.price}</>}
               </PrimaryButton>
             </div>
-          </Card>
+          </div>
         ))}
       </div>
       <p className="text-xs text-muted-foreground">{ar ? "المزايا حسب أعلى فئة تملكها، وليست ضمانًا لأرباح." : "Perks follow your highest owned tier and are not a guaranteed return."}</p>
