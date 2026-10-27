@@ -4,7 +4,7 @@ import { TaskRow } from "@/components/TaskRow";
 import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
-import { Ticket } from "lucide-react";
+import { ChevronDown, Ticket } from "lucide-react";
 import { useStore } from "@/lib/store";
 import { claimReferralGoal, completeTask } from "@/lib/api.functions";
 import { REFERRAL_GOALS } from "@/lib/config";
@@ -111,7 +111,7 @@ function Tasks() {
                   <span className="flex items-center gap-1"><Ticket className="size-3.5" />+{a.tasks.length * 2}</span>
                 </span>
               </span>
-              <span aria-hidden="true">{app === a.name ? "−" : "+"}</span>
+              <ChevronDown aria-hidden="true" className={`size-5 shrink-0 transition-transform duration-300 ${app === a.name ? "rotate-180" : ""}`} />
             </GhostButton>
             {app === a.name && <div className="mt-2 space-y-2">
               {a.tasks.map((task: any) => <TaskRow key={task.id} image={a.image} title={title(task)} reward={Number(task.reward)}
