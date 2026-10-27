@@ -37,7 +37,7 @@ describe("NFT tiers", () => {
   });
   it("uses the best owned tier, not stacking", () => {
     expect(nftBenefits([])).toEqual({ mining: 1, referralRate: 0.1, tasks: 1 });
-    const b = nftBenefits([1, 10]);
+    const b = nftBenefits([1, 6]);
     expect(b.mining).toBeCloseTo(3.5); expect(b.referralRate).toBeCloseTo(0.25); expect(b.tasks).toBe(2.5);
   });
 });
