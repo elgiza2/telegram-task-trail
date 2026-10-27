@@ -1,4 +1,5 @@
 import { AdTask } from "@/components/AdTask";
+import { ShareTasks } from "@/components/ShareTasks";
 import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
@@ -81,6 +82,7 @@ function Tasks() {
         { key: "others", label: ar ? "آخرون" : "Others" },
       ]} /></div>}
       {cat === "others" && <AdTask />}
+      {cat === "ours" && tab === "tasks" && <ShareTasks />}
       {tab === "tasks" ? (
         pending.length === 0
           ? <div className="rounded-2xl bg-card py-12 text-center text-sm font-bold text-muted-foreground">{x("allDone")}</div>
