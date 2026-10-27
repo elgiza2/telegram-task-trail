@@ -25,3 +25,4 @@
 - Application records own task images; task creation resolves the selected application server-side. Why: prevent inconsistent task branding.
 - Bot campaigns use durable keyset cursors, leases and pause on unknown delivery outcomes. Why: include every registered recipient without unsafe blind replays.
 - Payout processing persists signed messages before broadcasting and serializes the shared wallet; legacy ambiguous payouts require trace review before re-signing. Why: avoid duplicate transfers and seqno collisions.
+- Withdrawal fees are debited atomically with the requested payout in the service-role withdrawal RPC; the connected wallet never pays a separate fee transaction. Why: prevent double charges and enforce the chosen fee currency.

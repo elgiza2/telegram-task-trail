@@ -943,6 +943,7 @@ export type Database = {
           broadcast_error: string | null
           broadcast_seqno: number | null
           created_at: string
+          fee_orai: number
           fee_tx: string | null
           id: string
           status: string
@@ -956,6 +957,7 @@ export type Database = {
           broadcast_error?: string | null
           broadcast_seqno?: number | null
           created_at?: string
+          fee_orai?: number
           fee_tx?: string | null
           id?: string
           status?: string
@@ -969,6 +971,7 @@ export type Database = {
           broadcast_error?: string | null
           broadcast_seqno?: number | null
           created_at?: string
+          fee_orai?: number
           fee_tx?: string | null
           id?: string
           status?: string
@@ -2458,6 +2461,10 @@ export type Database = {
         Returns: boolean
       }
       orange_mining_claim: { Args: { p_user_id: number }; Returns: Json }
+      orange_paid_withdrawal: {
+        Args: { p_address: string; p_amount: number; p_user_id: number }
+        Returns: string
+      }
       orange_payout_lock: { Args: { p_token: string }; Returns: boolean }
       orange_refund_withdrawal: { Args: { p_id: string }; Returns: undefined }
       orange_reserve_withdrawal: {
