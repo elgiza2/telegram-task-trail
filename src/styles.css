@@ -134,7 +134,7 @@
 }
 
 @utility safe-top {
-  padding-top: calc(var(--tg-safe-top, env(safe-area-inset-top, 0px)) + var(--tg-content-top, 0px) + 12px);
+  padding-top: calc(var(--tg-safe-top, env(safe-area-inset-top, 0px)) + var(--tg-content-top, 0px) + 28px);
 }
 
 @utility safe-bottom {
