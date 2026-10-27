@@ -1,4 +1,8 @@
 # Roadmap
+- [ ] Redesign colored spin wheel, game artwork using uploaded characters, organized referrals with images, repair app icon
+- [ ] Configure provided bot credential securely; image + bold /start, restrained premium emoji and buttons
+- [ ] Daily generated-image bot notifications and daily channel draft delivered to admins Torekr and eIgiza
+- [ ] Expose admin panel at /101 with server-verified admin access
 - [ ] Replace practice games with ticket-funded Duck Crash, Mines, Higher/Lower and Memory; persistent rounds and ticket rewards
 - [ ] Add daily free tickets and one-time tickets from tasks, referral stages and confirmed ads
 - [ ] Import animated Utya duck assets; explain Monetag shared callback secret and validate live rewards when configured
