@@ -47,7 +47,7 @@ export function StoreProvider({ children }: { children: ReactNode }) {
 
   useEffect(() => {
     const wa = initTelegram();
-    const l = pickLang(wa?.initDataUnsafe?.user?.language_code ?? navigator.language);
+    const l = "en";
     setLang(l);
     document.documentElement.lang = l;
     document.documentElement.dir = RTL.has(l) ? "rtl" : "ltr";

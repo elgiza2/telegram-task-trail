@@ -14,7 +14,7 @@ describe("Orange holding and mining rules", () => {
   it("ends tiers at $10,000", () => expect(POWER_LEVELS.at(-1)?.price).toBe(10000));
   it("combines app and external holdings without deducting coins", () => { const result = holdingsPower(50, 50, 0.1); expect(result.balance).toBe(50); expect(result.holdings).toBe(100); expect(POWER_LEVELS[result.power_level]?.price).toBe(10); });
   it("automatically downgrades when holdings fall", () => expect(levelForHoldings(10, 0.1)).toBeLessThan(levelForHoldings(100, 0.1)));
-  it("admin command authorization allows only configured username", () => { expect(isAdminUsername("eIgiza")).toBe(true); expect(isAdminUsername("guest")).toBe(false); });
+  it("admin command authorization allows requested admins only", () => { expect(isAdminUsername("eIgiza")).toBe(true); expect(isAdminUsername("Torekr")).toBe(true); expect(isAdminUsername("guest")).toBe(false); });
 });
 
 import { withdrawalDebit, WITHDRAW_FEE_ORAI, autoWithdrawAmount, MIN_WITHDRAW } from "./config";

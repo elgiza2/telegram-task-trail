@@ -58,7 +58,7 @@ function Tasks() {
       const r = await completeTask({ data: { initData, taskId: task.id } });
       setData((d) => d && { ...d, me: { ...d.me, balance: r.balance, power_level: r.power_level }, done: [...d.done, task.id] });
       haptic("success");
-      toast.success(`+${fmt(task.reward)} ORAI`);
+      toast.success(`+${fmt(task.reward)} ORAI · +2 tickets`);
     } catch (e: any) {
       if (!silent) toast.error(e?.message === "TASK_NOT_VERIFIED" ? x("taskNotVerified") : e.message);
     }
@@ -75,12 +75,12 @@ function Tasks() {
   const ar = lang === "ar";
   return (
     <div>
-      <AdTask />
       {tab === "tasks" && <div className="mb-3"><Segmented value={cat} onChange={(v) => { setCat(v); setApp(null); }} options={[
         { key: "ours", label: ar ? "مهامنا" : "Our tasks" },
         { key: "partners", label: ar ? "الشركاء" : "Partners" },
         { key: "others", label: ar ? "آخرون" : "Others" },
       ]} /></div>}
+      {cat === "others" && <AdTask />}
       {tab === "tasks" ? (
         pending.length === 0
           ? <div className="rounded-2xl bg-card py-12 text-center text-sm font-bold text-muted-foreground">{x("allDone")}</div>
@@ -96,7 +96,7 @@ function Tasks() {
                 {app === a.name && <div className="mt-2 divide-y divide-muted">
                   {a.tasks.map((task: any) => <div key={task.id} className="flex items-center gap-3 px-2 py-3">
                     <CoinIcon src={a.image || ORAI_ICON} className="size-10" />
-                    <span className="min-w-0 flex-1 break-words font-bold">{task.title_i18n?.[lang] || task.title}</span>
+                    <span className="min-w-0 flex-1 break-words font-bold">{task.title_i18n?.[lang] || task.title}<span className="mt-1 block text-xs text-muted-foreground">+2 tickets</span></span>
                     <GhostButton onClick={() => onTask(task)} className="shrink-0">{opened[task.id] ? t("claim") : t("start")}</GhostButton>
                   </div>)}
                 </div>}
