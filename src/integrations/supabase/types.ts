@@ -686,6 +686,30 @@ export type Database = {
         }
         Relationships: []
       }
+      orai_game_spins: {
+        Row: {
+          created_at: string
+          last_spun_at: string | null
+          reward: number
+          updated_at: string
+          user_id: number
+        }
+        Insert: {
+          created_at?: string
+          last_spun_at?: string | null
+          reward?: number
+          updated_at?: string
+          user_id: number
+        }
+        Update: {
+          created_at?: string
+          last_spun_at?: string | null
+          reward?: number
+          updated_at?: string
+          user_id?: number
+        }
+        Relationships: []
+      }
       orai_market_snapshots: {
         Row: {
           data: Json
@@ -2479,6 +2503,7 @@ export type Database = {
         }
         Returns: string
       }
+      orange_spin_daily: { Args: { p_user_id: number }; Returns: Json }
       orange_sync_power: {
         Args: { p_level: number; p_rate: number; p_user_id: number }
         Returns: undefined
