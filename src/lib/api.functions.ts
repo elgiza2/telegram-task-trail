@@ -44,9 +44,12 @@ export const bootstrap = createServerFn({ method: "POST" })
     const { reconcilePayouts } = await import("./payout-queue.server");
     await reconcilePayouts(db, user.id);
     await syncPower(db, user.id);
+    const taskQuery = db.from("orai_tasks").select("*").order("sort");
+    if (process.env["VERCEL_ENV"] === "preview") taskQuery.or("active.eq.true,kind.eq.tiger_case_free");
+    else taskQuery.eq("active", true);
     const [me, tasks, done, refs, wd, refCount, goals] = await Promise.all([
       loadUser(db, user.id),
-      db.from("orai_tasks").select("*").eq("active", true).order("sort"),
+      taskQuery,
       db.from("orai_task_completions").select("task_id").eq("user_id", user.id),
       db.from("orai_tg_users").select("id, first_name, username, referral_signup_paid, referral_wallet_paid, referral_mining_paid, mining_claim_count").eq("referred_by", user.id).limit(100),
       db.from("orai_withdrawals").select("*").eq("user_id", user.id).order("created_at", { ascending: false }).limit(20),
@@ -93,13 +96,19 @@ export const completeTask = createServerFn({ method: "POST" })
   .inputValidator((i: Auth & { taskId: string }) => ({ ...auth(i), taskId: String(i.taskId) }))
   .handler(async ({ data }) => {
     const { user, db } = await ctx(data.initData);
-    const { data: task } = await db.from("orai_tasks").select("*").eq("id", data.taskId).eq("active", true).single();
-    if (!task) throw new Error("Task not found");
+    const { data: task } = await db.from("orai_tasks").select("*").eq("id", data.taskId).single();
+    const tigerPreview = process.env["VERCEL_ENV"] === "preview" && task?.kind === "tiger_case_free";
+    if (!task || (!task.active && !tigerPreview)) throw new Error("Task not found");
     // Real verification per task kind.
     if (task.kind === "tiger_case_free") {
       const { verifyTigerCaseFreeOpen } = await import("./tiger-case.server");
       const verified = await verifyTigerCaseFreeOpen(user.id, process.env["TIGER_CASE_API_KEY"]);
       if (!verified) throw new Error("TASK_NOT_VERIFIED");
+      // Preview uses the live database, so verify the partner API but never persist completion or credit a real balance.
+      if (tigerPreview) {
+        const me = await loadUser(db, user.id);
+        return { balance: Number(me.balance), power_level: Number(me.power_level), previewVerified: true };
+      }
     }
     const match = String(task.link).match(/(?:^|\/\/)t\.me\/([A-Za-z0-9_]{5,})/);
     const chat = task.chat_id || (match && !String(task.link).includes("?") ? `@${match[1]}` : null);
@@ -121,7 +130,7 @@ export const completeTask = createServerFn({ method: "POST" })
     const balance = Number(me.balance) + Number(task.reward) * nftBenefits((owned ?? []).map((n: any) => n.tier)).tasks;
     await db.from("orai_tg_users").update({ balance }).eq("id", user.id);
     const synced = await syncPower(db, user.id);
-    return { balance, power_level: synced.power_level };
+    return { balance, power_level: synced.power_level, previewVerified: false };
   });
 
 export const upgradePower = createServerFn({ method: "POST" })
