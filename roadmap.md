@@ -51,3 +51,5 @@
 - [ ] NFT images from our characters
 - [ ] NFT: remove #1 labels, clean power card, new investment banner image, max tier 10000 GRAM with few tiers
 - [x] Publish + Start webhook + Vercel
+- [ ] Full redesign of all games (gameplay)
+- [ ] Fix daily bot notifications quality
