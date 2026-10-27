@@ -1,20 +1,20 @@
 # Roadmap
-- [ ] Refine translucent iOS-inspired controls without crowding the redesigned pages
-- [ ] Keep redesigned pages uncluttered; collapse secondary collectible details
-- [ ] Remove Power control and legacy holding-tier presentation from Mining without changing financial rules implicitly
-- [ ] Reconnect Telegram in the new workspace; previous workspace connection IDs are invalid
+- [x] Refine translucent iOS-inspired controls without crowding the redesigned pages
+- [x] Keep redesigned pages uncluttered; collapse secondary collectible details
+- [x] Remove Power control and legacy holding-tier presentation from Mining without changing financial rules implicitly
+- [x] Reconnect Telegram in the new workspace; previous workspace connection IDs are invalid
 - [ ] Apply a specialized design skill; redesign Mining, Referrals and Arcade without top headings and respect Telegram safe areas
-- [ ] Rework Arcade layout after latest feedback and add ORAI mark to balances and rewards throughout site
+- [x] Rework Arcade layout after latest feedback and add ORAI mark to balances and rewards throughout site
 - [ ] Replace Telegram connector and login-verification credential with newly supplied bot token
-- [ ] Show Monetag as a normal task only under Others; preserve ad consent and verified rewards
-- [ ] Deploy tested Vercel reverse-proxy front door without replacing the existing live deployment prematurely; verify destination and traffic
+- [x] Show Monetag as a normal task only under Others; preserve ad consent and verified rewards
+- [ ] Vercel candidate ready; do not promote until deployment protection is resolved and candidate flow verified (test alias redirects to Vercel login)
 - [ ] Make all site UI and bot Start message English-only (chat remains Arabic)
-- [ ] Redesign colored spin wheel, game artwork using uploaded characters, organized referrals with images, repair app icon
+- [x] Redesign colored spin wheel, game artwork using uploaded characters, organized referrals with images, repair app icon
 - [ ] Configure provided bot credential securely; image + bold /start, restrained premium emoji and buttons
 - [ ] Daily generated-image bot notifications and daily channel draft delivered to admins Torekr and eIgiza
-- [ ] Expose admin panel at /101 with server-verified admin access
-- [ ] Replace practice games with ticket-funded Duck Crash, Mines, Higher/Lower and Memory; persistent rounds and ticket rewards
-- [ ] Add daily free tickets and one-time tickets from tasks, referral stages and confirmed ads
+- [x] Expose admin panel at /101 with server-verified admin access
+- [x] Replace practice games with ticket-funded Duck Crash, Mines, Higher/Lower and Memory; persistent rounds and ticket rewards
+- [x] Add daily free tickets and one-time tickets from tasks, referral stages and confirmed ads
 - [ ] Import animated Utya duck assets; explain Monetag shared callback secret and validate live rewards when configured
 - [ ] Monetag zone 11951290 consent UI and verified callback implemented; awaiting dashboard postback setup and live verification
 - [x] Split 25 ORAI referral bonus: 5 at signup, 10 after wallet ownership verification, 10 after two mining claims
