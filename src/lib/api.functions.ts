@@ -44,12 +44,14 @@ export const bootstrap = createServerFn({ method: "POST" })
     const { reconcilePayouts } = await import("./payout-queue.server");
     await reconcilePayouts(db, user.id);
     await syncPower(db, user.id);
-    const [me, tasks, done, refs, wd] = await Promise.all([
+    const [me, tasks, done, refs, wd, refCount, goals] = await Promise.all([
       loadUser(db, user.id),
       db.from("orai_tasks").select("*").eq("active", true).order("sort"),
       db.from("orai_task_completions").select("task_id").eq("user_id", user.id),
       db.from("orai_tg_users").select("id, first_name, username, referral_signup_paid, referral_wallet_paid, referral_mining_paid, mining_claim_count").eq("referred_by", user.id).limit(100),
       db.from("orai_withdrawals").select("*").eq("user_id", user.id).order("created_at", { ascending: false }).limit(20),
+      db.from("orai_tg_users").select("id", { count: "exact", head: true }).eq("referred_by", user.id).neq("id", user.id),
+      db.from("orai_referral_goals").select("goal").eq("user_id", user.id),
     ]);
     return {
       me,
@@ -58,6 +60,8 @@ export const bootstrap = createServerFn({ method: "POST" })
       done: (done.data ?? []).map((d: any) => d.task_id as string),
       referrals: refs.data ?? [],
       withdrawals: wd.data ?? [],
+      referralCount: refCount.count ?? 0,
+      claimedGoals: (goals.data ?? []).map((g: any) => Number(g.goal)),
     };
   });
 
@@ -446,3 +450,12 @@ export const gameStatus = createServerFn({ method: "POST" }).inputValidator(auth
   if (error) throw new Error(error.message);
   return { nextSpinAt: row?.last_spun_at ? new Date(new Date(row.last_spun_at).getTime() + 86400000).toISOString() : null };
 });
+
+export const claimReferralGoal = createServerFn({ method: "POST" })
+  .inputValidator((i: Auth & { goal: number }) => ({ ...auth(i), goal: Number(i.goal) }))
+  .handler(async ({ data }) => {
+    const { user, db } = await ctx(data.initData);
+    const { data: reward, error } = await (db as any).rpc("orai_claim_referral_goal", { p_user_id: user.id, p_goal: data.goal });
+    if (error) throw new Error(error.message);
+    return { reward: Number(reward) };
+  });
