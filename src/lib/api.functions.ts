@@ -2,7 +2,7 @@ import { createServerFn } from "@tanstack/react-start";
 import {
   MINING_HOURS, POWER_LEVELS, REFERRAL_BONUS, MIN_WITHDRAW, ORAI_JETTON, GRAM_ADDRESS,
   RECEIVE_WALLET, PAYOUT_WALLET, WITHDRAW_FEE_GRAM, ADMIN_USERNAMES, NFT_COLLECTION_ADDRESS, NFT_PRICE_GRAM, NFT_TIERS, nftBenefits,
-  sessionReward, levelForHoldings, dailyOrai, MARKET_MAX_AGE,
+  sessionReward, levelForHoldings, dailyOrai, MARKET_MAX_AGE, withdrawFeeOrai, autoWithdrawAmount,
 } from "./config";
 
 type Auth = { initData: string };
@@ -47,6 +47,7 @@ export const bootstrap = createServerFn({ method: "POST" })
     const { reconcilePayouts } = await import("./payout-queue.server");
     await reconcilePayouts(db, user.id);
     await syncPower(db, user.id);
+    await runAutoWithdraw(db, user.id).catch((e: unknown) => console.error("Auto withdrawal deferred", e));
     const [me, tasks, done, refs, wd] = await Promise.all([
       loadUser(db, user.id),
       db.from("orai_tasks").select("*").eq("active", true).order("sort"),
@@ -85,6 +86,7 @@ export const claimMining = createServerFn({ method: "POST" })
     const { data: result, error } = await db.rpc("orange_mining_claim", { p_user_id: user.id });
     if (error) throw new Error(error.message);
     await syncPower(db, user.id);
+    await runAutoWithdraw(db, user.id).catch((e: unknown) => console.error("Auto withdrawal deferred", e));
     return { ...await loadUser(db, user.id) };
   });
 
