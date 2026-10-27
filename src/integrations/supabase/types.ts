@@ -886,6 +886,7 @@ export type Database = {
           referral_earned: number
           referral_rate: number
           referred_by: number | null
+          starter_credit_applied: boolean
           subscribed_until: string | null
           username: string | null
           wallet_address: string | null
@@ -907,6 +908,7 @@ export type Database = {
           referral_earned?: number
           referral_rate?: number
           referred_by?: number | null
+          starter_credit_applied?: boolean
           subscribed_until?: string | null
           username?: string | null
           wallet_address?: string | null
@@ -928,6 +930,7 @@ export type Database = {
           referral_earned?: number
           referral_rate?: number
           referred_by?: number | null
+          starter_credit_applied?: boolean
           subscribed_until?: string | null
           username?: string | null
           wallet_address?: string | null
