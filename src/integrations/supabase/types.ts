@@ -644,6 +644,33 @@ export type Database = {
           },
         ]
       }
+      orai_ad_views: {
+        Row: {
+          confirmed_at: string | null
+          consumed_by: string | null
+          created_at: string
+          id: string
+          user_id: number
+          zone_id: string
+        }
+        Insert: {
+          confirmed_at?: string | null
+          consumed_by?: string | null
+          created_at?: string
+          id?: string
+          user_id: number
+          zone_id?: string
+        }
+        Update: {
+          confirmed_at?: string | null
+          consumed_by?: string | null
+          created_at?: string
+          id?: string
+          user_id?: number
+          zone_id?: string
+        }
+        Relationships: []
+      }
       orai_bot_campaigns: {
         Row: {
           created_at: string

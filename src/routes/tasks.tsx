@@ -1,3 +1,4 @@
+import { AdTask } from "@/components/AdTask";
 import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
@@ -74,7 +75,7 @@ function Tasks() {
   const ar = lang === "ar";
   return (
     <div>
-
+      <AdTask />
       {tab === "tasks" && <div className="mb-3"><Segmented value={cat} onChange={(v) => { setCat(v); setApp(null); }} options={[
         { key: "ours", label: ar ? "مهامنا" : "Our tasks" },
         { key: "partners", label: ar ? "الشركاء" : "Partners" },
