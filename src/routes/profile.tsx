@@ -22,7 +22,7 @@ function Profile() {
   return <div className="space-y-5">
     <div className="rounded-3xl bg-primary p-5 text-primary-foreground">
       <div className="flex items-center gap-4">
-        <img src={me.photo_url || mascot.url} alt="" className="size-16 rounded-full object-cover ring-2 ring-primary-foreground/40" />
+        <img src={me.photo_url || mascot} alt="" className="size-16 rounded-full object-cover ring-2 ring-primary-foreground/40" />
         <div className="min-w-0"><h2 className="truncate text-xl font-bold">{me.first_name || me.username}</h2><div className="mt-0.5 text-sm font-bold opacity-80" dir="ltr">{me.username ? `@${me.username}` : ""}</div></div>
       </div>
       <div className="mt-5 grid grid-cols-3 gap-2 text-center">

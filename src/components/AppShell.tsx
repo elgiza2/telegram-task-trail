@@ -40,7 +40,7 @@ function Frame() {
   if (!data) {
     return (
       <div className="flex min-h-dvh items-center justify-center">
-        <img src={logo.url} alt="ORAI" className="size-20 animate-pulse rounded-full" />
+        <img src={logo} alt="ORAI" className="size-20 animate-pulse rounded-full" />
       </div>
     );
   }

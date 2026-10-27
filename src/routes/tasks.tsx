@@ -51,7 +51,8 @@ function Tasks() {
     const a = apps.get(task.app_name) ?? { name: task.app_name, image: task.app_image || task.image_url, tasks: [] as any[] };
     a.tasks.push(task); apps.set(task.app_name, a);
   }
-  const shown = pending.filter((task: any) => !task.app_name);
+  const pinned = pending.filter((task: any) => !task.app_name && Number(task.sort) < 0);
+  const shown = pending.filter((task: any) => !task.app_name && Number(task.sort) >= 0);
   const refCount = Number((data as any).referralCount ?? data.referrals.length);
   const claimedGoals: number[] = (data as any).claimedGoals ?? [];
   const goals = REFERRAL_GOALS.filter((g) => !claimedGoals.includes(g.goal));
@@ -96,10 +97,12 @@ function Tasks() {
         {cat === "others" && <AdTask />}
         {cat === "others" && goals.map((g) => {
           const ready = refCount >= g.goal;
-          return <TaskRow key={g.goal} image={team.url} title={`Invite ${g.goal} friends (${Math.min(refCount, g.goal)}/${g.goal})`} reward={g.reward} tickets={0}
+          return <TaskRow key={g.goal} image={team} title={`Invite ${g.goal} friends (${Math.min(refCount, g.goal)}/${g.goal})`} reward={g.reward} tickets={0}
             label={busyGoal === g.goal ? "…" : ready ? "Claim" : "Go"} disabled={busyGoal === g.goal}
             onClick={() => ready ? void claimGoal(g.goal) : toast(`Invite ${g.goal - refCount} more friends from the Friends page`)} />;
         })}
+        {pinned.map((task: any) => <TaskRow key={task.id} image={task.image_url} title={title(task)} reward={Number(task.reward)}
+          label={opened[task.id] ? t("claim") : "Go"} onClick={() => onTask(task)} />)}
         {[...apps.values()].map((a) => (
           <div key={a.name}>
             <GhostButton aria-expanded={app === a.name} onClick={() => setApp(app === a.name ? null : a.name)} className="flex h-auto min-h-20 w-full items-center gap-3 p-3 text-start">
