@@ -17,6 +17,7 @@ import { Route as NftRouteImport } from './routes/nft'
 import { Route as PowerRouteImport } from './routes/power'
 import { Route as PremiumRouteImport } from './routes/premium'
 import { Route as ProfileRouteImport } from './routes/profile'
+import { Route as ReferralsRouteImport } from './routes/referrals'
 import { Route as RoadmapRouteImport } from './routes/roadmap'
 import { Route as SupporterRouteImport } from './routes/supporter'
 import { Route as SwapRouteImport } from './routes/swap'
@@ -67,6 +68,11 @@ const PremiumRoute = PremiumRouteImport.update({
 const ProfileRoute = ProfileRouteImport.update({
   id: '/profile',
   path: '/profile',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ReferralsRoute = ReferralsRouteImport.update({
+  id: '/referrals',
+  path: '/referrals',
   getParentRoute: () => rootRouteImport,
 } as any)
 const RoadmapRoute = RoadmapRouteImport.update({
@@ -135,6 +141,7 @@ export interface FileRoutesByFullPath {
   '/power': typeof PowerRoute
   '/premium': typeof PremiumRoute
   '/profile': typeof ProfileRoute
+  '/referrals': typeof ReferralsRoute
   '/roadmap': typeof RoadmapRoute
   '/supporter': typeof SupporterRoute
   '/swap': typeof SwapRoute
@@ -156,6 +163,7 @@ export interface FileRoutesByTo {
   '/power': typeof PowerRoute
   '/premium': typeof PremiumRoute
   '/profile': typeof ProfileRoute
+  '/referrals': typeof ReferralsRoute
   '/roadmap': typeof RoadmapRoute
   '/supporter': typeof SupporterRoute
   '/swap': typeof SwapRoute
@@ -178,6 +186,7 @@ export interface FileRoutesById {
   '/power': typeof PowerRoute
   '/premium': typeof PremiumRoute
   '/profile': typeof ProfileRoute
+  '/referrals': typeof ReferralsRoute
   '/roadmap': typeof RoadmapRoute
   '/supporter': typeof SupporterRoute
   '/swap': typeof SwapRoute
@@ -201,6 +210,7 @@ export interface FileRouteTypes {
     | '/power'
     | '/premium'
     | '/profile'
+    | '/referrals'
     | '/roadmap'
     | '/supporter'
     | '/swap'
@@ -222,6 +232,7 @@ export interface FileRouteTypes {
     | '/power'
     | '/premium'
     | '/profile'
+    | '/referrals'
     | '/roadmap'
     | '/supporter'
     | '/swap'
@@ -243,6 +254,7 @@ export interface FileRouteTypes {
     | '/power'
     | '/premium'
     | '/profile'
+    | '/referrals'
     | '/roadmap'
     | '/supporter'
     | '/swap'
@@ -265,6 +277,7 @@ export interface RootRouteChildren {
   PowerRoute: typeof PowerRoute
   PremiumRoute: typeof PremiumRoute
   ProfileRoute: typeof ProfileRoute
+  ReferralsRoute: typeof ReferralsRoute
   RoadmapRoute: typeof RoadmapRoute
   SupporterRoute: typeof SupporterRoute
   SwapRoute: typeof SwapRoute
@@ -334,6 +347,13 @@ declare module '@tanstack/react-router' {
       path: '/profile'
       fullPath: '/profile'
       preLoaderRoute: typeof ProfileRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/referrals': {
+      id: '/referrals'
+      path: '/referrals'
+      fullPath: '/referrals'
+      preLoaderRoute: typeof ReferralsRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/roadmap': {
@@ -425,6 +445,7 @@ const rootRouteChildren: RootRouteChildren = {
   PowerRoute: PowerRoute,
   PremiumRoute: PremiumRoute,
   ProfileRoute: ProfileRoute,
+  ReferralsRoute: ReferralsRoute,
   RoadmapRoute: RoadmapRoute,
   SupporterRoute: SupporterRoute,
   SwapRoute: SwapRoute,
