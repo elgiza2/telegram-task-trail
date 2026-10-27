@@ -5,7 +5,7 @@ import { SWAP_URL } from "@/lib/config";
 import { openLink } from "@/lib/telegram";
 import { fmt } from "@/lib/ton";
 import { CoinIcon, ORAI_ICON } from "@/components/ui-kit";
-import mascot from "@/assets/orai-mascot.jpg.asset.json";
+import mascot from "@/assets/orai-mascot.jpg";
 
 export const Route = createFileRoute("/profile")({ ssr: false, head: () => ({ meta: [ { title: "Orange — Your profile" }, { name: "description", content: "Your Telegram profile, ORAI holdings, Premium and project information." }, { property: "og:title", content: "Orange Profile" }, { property: "og:description", content: "Your Telegram profile, ORAI holdings, Premium and project information." }, { property: "og:type", content: "website" }, { name: "twitter:card", content: "summary_large_image" } ]}), component: Profile });
 

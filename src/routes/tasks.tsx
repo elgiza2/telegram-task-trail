@@ -11,7 +11,7 @@ import { REFERRAL_GOALS } from "@/lib/config";
 import { pendingTasks } from "@/lib/task-visibility";
 import { openLink, haptic } from "@/lib/telegram";
 import { fmt } from "@/lib/ton";
-import team from "@/assets/orange-team.jpg.asset.json";
+import team from "@/assets/orange-team.jpg";
 import { CoinIcon, GhostButton, ORAI_ICON, Segmented } from "@/components/ui-kit";
 
 export const Route = createFileRoute("/tasks")({

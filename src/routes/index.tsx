@@ -8,7 +8,7 @@ import { MINING_HOURS } from "@/lib/config";
 import { fmt } from "@/lib/ton";
 import { haptic } from "@/lib/telegram";
 import { CoinIcon, ORAI_ICON, PrimaryButton, GhostButton } from "@/components/ui-kit";
-import mascot from "@/assets/orange-captain.jpg.asset.json";
+import mascot from "@/assets/orange-captain.jpg";
 
 export const Route = createFileRoute("/")({ ssr: false, head: () => ({ meta: [
   { title: "Orange — Mining" }, { name: "description", content: "Mine ORAI continuously and claim every two hours." },

@@ -19,7 +19,7 @@ import crash from '@/assets/game-crash.jpg';
 import mines from '@/assets/game-mines.jpg';
 import higher from '@/assets/game-higher.jpg';
 import memory from '@/assets/game-memory.jpg';
-import captain from '@/assets/orange-captain.jpg.asset.json';
+import captain from '@/assets/orange-captain.jpg';
 export const Route = createFileRoute('/games')({ssr:false,head:()=>({meta:[{title:'Orange — Arcade'},{name:'description',content:'Play Orange Crash, Gems, Higher or Lower and Memory with earned tickets.'},{property:'og:title',content:'Orange — Arcade'},{property:'og:description',content:'Your characters. Your next high score.'},{property:'og:type',content:'website'},{name:'twitter:card',content:'summary_large_image'}]}),component:Games});
 const games = [{id:'crash',name:'Rocket Crash',image:crash,tag:'Perfect timing',color:'bg-game-sky'},{id:'mines',name:'Gem Hunt',image:mines,tag:'Find the safe gems',color:'bg-game-violet'},{id:'higher',name:'Higher or Lower',image:higher,tag:'Make your next call',color:'bg-game-pink'},{id:'memory',name:'Memory Match',image:memory,tag:'Follow the sequence',color:'bg-game-blue'}] as const;
 type Round=Awaited<ReturnType<typeof startArcade>>;

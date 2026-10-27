@@ -1,5 +1,5 @@
 import type { ButtonHTMLAttributes, ReactNode } from "react";
-import oraiLogo from "@/assets/orange-icon.png.asset.json";
+import oraiLogo from "@/assets/orange-icon.png";
 
 export const GRAM_ICON =
   "https://asset.ston.fi/img/EQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAM9c/7e9ffa3a3fc433184f7f2dd80b2bb9bfb4371f9d505f33cae81a41b5e0a50107";

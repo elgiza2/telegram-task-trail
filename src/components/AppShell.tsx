@@ -5,7 +5,7 @@ import { House, Gift, Users, Wallet, Gamepad2 } from "lucide-react";
 import { StoreProvider, useStore } from "@/lib/store";
 import { getWebApp } from "@/lib/telegram";
 import { Toaster } from "@/components/ui/sonner";
-import logo from "@/assets/orange-icon.png.asset.json";
+import logo from "@/assets/orange-icon.png";
 
 const tabs = [
   { to: "/", icon: House, key: "home" },
