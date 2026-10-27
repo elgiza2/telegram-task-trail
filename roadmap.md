@@ -49,3 +49,4 @@
 - [ ] Real GRAM/ORAI price from STON API
 - [ ] Fix navigation lag + smooth page transition
 - [ ] NFT images from our characters
+- [ ] NFT: remove #1 labels, clean power card, new investment banner image, max tier 10000 GRAM with few tiers

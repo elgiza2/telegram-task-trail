@@ -27,7 +27,7 @@ const demoData = (lang: string): Data => ({
     subscribed_until: null, created_at: new Date().toISOString(),
   } as any,
   isAdmin: false,
-  tasks: [], done: [], referrals: [], withdrawals: [],
+  tasks: [], done: [], referrals: [], withdrawals: [], referralCount: 0, claimedGoals: [],
 });
 
 export function StoreProvider({ children }: { children: ReactNode }) {
