@@ -65,12 +65,19 @@ user = req("/v2/user"); uid = user["user"]["id"]
 teams = req("/v2/teams")["teams"]
 tid = next((t["id"] for t in teams if t.get("createdBy") == uid), "")
 params = f"teamId={tid}&" if tid else ""
+import hashlib
 files = []
 for dirpath, _, names in os.walk(STAGE):
     for n in names:
         full = os.path.join(dirpath, n)
         data = open(full, "rb").read()
-        files.append({"file": os.path.relpath(full, STAGE), "data": base64.b64encode(data).decode(), "encoding": "base64"})
+        sha = hashlib.sha1(data).hexdigest()
+        u = f"{API}/v2/files" + (f"?{params.rstrip('&')}" if params else "")
+        r = urllib.request.Request(u, data=data, method="POST")
+        r.add_header("Authorization", f"Bearer {os.environ['VERCEL_DEPLOY_TOKEN']}")
+        r.add_header("x-vercel-digest", sha); r.add_header("Content-Type", "application/octet-stream")
+        urllib.request.urlopen(r, timeout=120).read()
+        files.append({"file": os.path.relpath(full, STAGE), "sha": sha, "size": len(data)})
 dep = req("/v13/deployments", "POST", {"name": PROJECT, "files": files, "target": "production", "projectSettings": {"framework": None}}, params.rstrip("&"))
 did = dep["id"]; print("deployment:", dep.get("url"), did, flush=True)
 for _ in range(120):
