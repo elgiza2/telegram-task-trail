@@ -1,4 +1,7 @@
 # Roadmap
+- [ ] Replace practice games with ticket-funded Duck Crash, Mines, Higher/Lower and Memory; persistent rounds and ticket rewards
+- [ ] Add daily free tickets and one-time tickets from tasks, referral stages and confirmed ads
+- [ ] Import animated Utya duck assets; explain Monetag shared callback secret and validate live rewards when configured
 - [ ] Monetag zone 11951290 consent UI and verified callback implemented; awaiting dashboard postback setup and live verification
 - [x] Split 25 ORAI referral bonus: 5 at signup, 10 after wallet ownership verification, 10 after two mining claims
 - [ ] Monetag opt-in rewarded ads and ad tasks; advise nonintrusive format and collect zone code; withdrawal requires 5 provider-verified ad views (click condition only if provider permits incentivized clicks)
