@@ -28,7 +28,7 @@ export const Route = createFileRoute("/api/public/jobs/campaign")({ server: { ha
       if (!message) break;
       let result: { ok?: boolean; error_code?: number; description?: string; parameters?: { retry_after?: number } };
       try {
-        result = await telegramApi("sendMessage", { chat_id: user.id, text: `<b>${message[0]}</b>`, parse_mode: "HTML", reply_markup: { inline_keyboard: [[{ text: message[1], web_app: { url: APP_URL } }]] } });
+        result = await telegramApi("sendMessage", { chat_id: user.id, text: `<b>${message[0]}</b>`, parse_mode: "HTML", reply_markup: { inline_keyboard: [[{ style: "primary", text: message[1], web_app: { url: APP_URL } }]] } });
       } catch {
         await db.from("orai_bot_campaigns").update({ status: "paused", pause_reason: `Unknown delivery outcome after user ${cursor}; manual review required` }).eq("id", campaign.id).eq("lease_token", lease);
         return Response.json({ paused: true });
