@@ -16,15 +16,16 @@ export function initTelegram() {
       wa.requestFullscreen?.();
       wa.disableVerticalSwipes?.();
     }
-    wa.setHeaderColor?.("#f6f1ea");
-    wa.setBackgroundColor?.("#f6f1ea");
+    const background = getComputedStyle(document.documentElement).backgroundColor;
+    wa.setHeaderColor?.("bg_color");
+    wa.setBackgroundColor?.(background);
   } catch {}
   const applyInsets = () => {
     const s = wa.safeAreaInset ?? {};
     const c = wa.contentSafeAreaInset ?? {};
     const root = document.documentElement.style;
     root.setProperty("--tg-safe-top", `${s.top ?? 0}px`);
-    root.setProperty("--tg-content-top", `${c.top ?? 0}px`);
+    root.setProperty("--tg-content-top", `${Math.max(c.top ?? 0, wa.isFullscreen ? 56 : 0)}px`);
   };
   applyInsets();
   wa.onEvent?.("safeAreaChanged", applyInsets);

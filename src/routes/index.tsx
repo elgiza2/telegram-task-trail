@@ -8,7 +8,7 @@ import { MINING_HOURS } from "@/lib/config";
 import { fmt } from "@/lib/ton";
 import { haptic } from "@/lib/telegram";
 import { CoinIcon, ORAI_ICON, PrimaryButton } from "@/components/ui-kit";
-import mascot from "@/assets/orai-mascot.jpg.asset.json";
+import mascot from "@/assets/orange-captain.jpg.asset.json";
 
 export const Route = createFileRoute("/")({ ssr: false, head: () => ({ meta: [
   { title: "Orange — Mining" }, { name: "description", content: "Mine ORAI continuously and claim every two hours." },
@@ -51,8 +51,8 @@ function Home() {
     try { const result = done ? await claimMining({ data: { initData } }) : await startMining({ data: { initData } }); patchMe(result); haptic("success"); }
     catch (error: any) { toast.error(error.message); } finally { setBusy(false); }
   }
-  return <div className="flex flex-col items-center pt-2 text-center">
-    <header className="mb-6 flex w-full items-center justify-between"><h1 className="text-xl font-semibold">Orange</h1><span className="text-xs text-muted-foreground">ORAI · {t("mining")}</span></header>
+  return <div className="flex flex-col items-center pt-5 text-center">
+
     <MiningRing progress={started === null ? 0 : elapsed / total}>
       <img src={me.photo_url || mascot.url} alt="" className="size-40 rounded-full object-cover" />
     </MiningRing>
@@ -63,6 +63,6 @@ function Home() {
     <div className="mt-5 w-full">
       {started === null || done ? <PrimaryButton onClick={act} disabled={busy}>{done ? `${t("claim")} +${fmt(mined, 4)} ORAI` : t("startMining")}</PrimaryButton> : <div className="rounded-2xl bg-accent py-4 text-primary">+{fmt(mined, 4)} ORAI</div>}
     </div>
-    <div className="mt-7 w-full border-t border-border pt-5 text-start"><PowerSection /></div>
+    <div className="mt-7 w-full border-t border-border pt-5 text-start"><h2 className="mb-4 text-lg">Your Orange collectibles</h2><PowerSection /></div>
   </div>;
 }
