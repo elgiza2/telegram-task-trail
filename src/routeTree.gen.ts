@@ -10,6 +10,7 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as R101RouteImport } from './routes/101'
 import { Route as AboutRouteImport } from './routes/about'
 import { Route as AdminRouteImport } from './routes/admin'
 import { Route as GamesRouteImport } from './routes/games'
@@ -35,6 +36,11 @@ import { Route as ApiPublicTelegramWebhookRouteImport } from './routes/api/publi
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const R101Route = R101RouteImport.update({
+  id: '/101',
+  path: '/101',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AboutRoute = AboutRouteImport.update({
@@ -146,6 +152,7 @@ const ApiPublicTelegramWebhookRoute =
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/101': typeof R101Route
   '/about': typeof AboutRoute
   '/admin': typeof AdminRoute
   '/games': typeof GamesRoute
@@ -170,6 +177,7 @@ export interface FileRoutesByFullPath {
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/101': typeof R101Route
   '/about': typeof AboutRoute
   '/admin': typeof AdminRoute
   '/games': typeof GamesRoute
@@ -195,6 +203,7 @@ export interface FileRoutesByTo {
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/101': typeof R101Route
   '/about': typeof AboutRoute
   '/admin': typeof AdminRoute
   '/games': typeof GamesRoute
@@ -221,6 +230,7 @@ export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
+    | '/101'
     | '/about'
     | '/admin'
     | '/games'
@@ -245,6 +255,7 @@ export interface FileRouteTypes {
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
+    | '/101'
     | '/about'
     | '/admin'
     | '/games'
@@ -269,6 +280,7 @@ export interface FileRouteTypes {
   id:
     | '__root__'
     | '/'
+    | '/101'
     | '/about'
     | '/admin'
     | '/games'
@@ -294,6 +306,7 @@ export interface FileRouteTypes {
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  R101Route: typeof R101Route
   AboutRoute: typeof AboutRoute
   AdminRoute: typeof AdminRoute
   GamesRoute: typeof GamesRoute
@@ -324,6 +337,13 @@ declare module '@tanstack/react-router' {
       path: '/'
       fullPath: '/'
       preLoaderRoute: typeof IndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/101': {
+      id: '/101'
+      path: '/101'
+      fullPath: '/101'
+      preLoaderRoute: typeof R101RouteImport
       parentRoute: typeof rootRouteImport
     }
     '/about': {
@@ -478,6 +498,7 @@ declare module '@tanstack/react-router' {
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  R101Route: R101Route,
   AboutRoute: AboutRoute,
   AdminRoute: AdminRoute,
   GamesRoute: GamesRoute,
