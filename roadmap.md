@@ -1,7 +1,9 @@
 # Roadmap
-- [ ] Current request: withdrawal conditions dialog with ad viewing, app balance instead of holdings, completed tasks hidden, notification placement, new character wallet/referral art; defer automatic NFT minting
-- [ ] Verify automatic payout safety and report live-transfer blockers without spending funds
-- [ ] Publish this request on Vercel only; do not publish Lovable
+- [x] Current request UI: withdrawal conditions and consent ad button in dialog, app balance, completed-task selector, centered notifications, new character wallet/referral art; automatic NFT minting deferred
+- [x] Verify payout preflight and deployed RPC/table access without spending funds; 27 tests pass including save-before-broadcast and ambiguous submission protection
+- [ ] Live withdrawal end-to-end verification: needs actual Telegram session, confirmed Monetag views and explicitly authorized test transfer; no funds spent
+- [ ] Publish this request on Vercel only: blocked by current full-proxy architecture targeting the older published Lovable snapshot; do not silently publish Lovable or replace the working deployment
+- [ ] Remove ad-provider verification: not applied; false click-verification claims and forced advertiser clicks rejected, financial rewards remain provider-confirmed
 - [x] Refine translucent iOS-inspired controls without crowding the redesigned pages
 - [x] Keep redesigned pages uncluttered; collapse secondary collectible details
 - [x] Remove Power control and legacy holding-tier presentation from Mining without changing financial rules implicitly
@@ -32,7 +34,7 @@
 - [x] Charge withdrawal fees in ORAI from app balance; use the project's payout wallet (live payout verification waits for replacement wallet credentials)
 - [ ] Securely configure a replacement payout wallet; exposed recovery phrase must be replaced before live payouts
 - [ ] In-app ORAI purchase via STON.fi with the connected wallet
-- [ ] Automatic NFT minting after purchase
+- [-] Automatic NFT minting after purchase — deferred by user
 - [x] Daily ORAI wheel and free rocket practice game
 - [ ] Real-stake Crash game: payout rules and independent secure settlement engine needed
 - [ ] New leveling: upgrades with TON / ORAI, points from tasks & invites, NFT boosts (replace hold-in-wallet)
@@ -47,8 +49,8 @@
 - [ ] Full game redesign; crash with Telegram duck (licensing blocked → use Orange art)
 - [ ] Share-to-story task + share-message (prepared inline message w/ button) task in Ours
 - [ ] Referral tasks 20→100
-- [ ] NFT cards without emoji; new NFT art; auto mint via Getgems API
-- [ ] New wallet page image
+- [-] Automatic NFT minting via Getgems API — deferred by user
+- [x] New wallet and referral cartoon character artwork
 - [ ] Real GRAM/ORAI price from STON API
 - [ ] Fix navigation lag + smooth page transition
 - [ ] NFT images from our characters
