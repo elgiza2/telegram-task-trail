@@ -1,4 +1,5 @@
 # Roadmap
+- [ ] Opt-in rewarded ads and ad tasks; withdrawal requires 5 provider-verified ad views (provider/account needed; click condition only if provider permits incentivized clicks)
 - [ ] Redesign mining and compact animated glass navigation; monochrome controls, preserve artwork colors
 - [ ] Grant every existing and new user 2000 ORAI starter credit exactly once
 - [x] Import project from GitHub
