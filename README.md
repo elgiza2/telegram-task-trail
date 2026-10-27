@@ -1,26 +1,30 @@
-# Botkey Telegram Bridge
+# Orange Telegram Mini App
 
-@secret:TELEGRAM_BOT_TOKEN
+Telegram Mini App for mining ORAI on TON, with tasks, referrals, wallet connection, and an admin control room at `/101`.
 
-This project was built with [Lovable](https://lovable.dev).
+## Configuration
 
-**Live app**: https://botkey-telegram-bridge.lovable.app
+Set these server-side environment variables:
 
-## Build with Lovable
+- `TELEGRAM_BOT_TOKEN` — the bot token from BotFather.
+- `APP_URL` — the public HTTPS URL of the deployed app.
+- `SUPABASE_URL` and `SUPABASE_PUBLISHABLE_KEY` — the Supabase project connection.
+- `SUPABASE_PROJECT_ID` — the Supabase project identifier.
+- `CRON_SECRET` — secret used to authorize scheduled broadcast jobs.
 
-Continue developing this project in the [Lovable editor](https://lovable.dev/projects/6c4ebb67-ba46-44e9-83fe-27309c67ced1).
-
-- **Ship faster**: describe what you want to build and Lovable handles the code.
-- **Stay in sync**: every change made in Lovable is committed straight to this repository.
-- **Full ownership**: this code is yours. Push to `main` on GitHub and your changes sync back into Lovable, ready for your next prompt.
+The Telegram webhook handles `/start` and `/101`. Admin access remains restricted to the usernames configured in `src/lib/config.ts`.
 
 ## Development
 
-Prefer working locally? You need Node.js and npm — [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating).
+```sh
+pnpm install
+pnpm dev
+```
+
+## Production
 
 ```sh
-git clone <this-repository-url>
-cd <repository-name>
-npm i
-npm run dev
+pnpm build
 ```
+
+Deploy the project to Vercel with the TanStack Start framework and configure the environment variables above in the Production environment.
