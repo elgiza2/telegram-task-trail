@@ -1,4 +1,6 @@
 # Roadmap
+- [ ] Redesign mining and compact animated glass navigation; monochrome controls, preserve artwork colors
+- [ ] Grant every existing and new user 2000 ORAI starter credit exactly once
 - [x] Import project from GitHub
 - [x] Own tables (orai_ prefix) in the connected database, existing data untouched
 - [x] Tasks page tabs: Our tasks / Partners / Others; apps with image, tasks under each app
