@@ -8,6 +8,7 @@ import { ChevronDown, Ticket } from "lucide-react";
 import { useStore } from "@/lib/store";
 import { claimReferralGoal, completeTask } from "@/lib/api.functions";
 import { REFERRAL_GOALS } from "@/lib/config";
+import { pendingTasks } from "@/lib/task-visibility";
 import { openLink, haptic } from "@/lib/telegram";
 import { fmt } from "@/lib/ton";
 import team from "@/assets/orange-team.jpg.asset.json";
@@ -44,7 +45,7 @@ function Tasks() {
     return () => { window.removeEventListener("focus", onFocus); document.removeEventListener("visibilitychange", onFocus); };
   });
   if (!data) return null;
-  const pending = data.tasks.filter((task: any) => (task.app_name || !BUILT_IN.includes(task.kind)) && !data.done.includes(task.id) && (task.app_category || "ours") === cat);
+  const pending = pendingTasks(data.tasks, data.done).filter((task: any) => (task.app_name || !BUILT_IN.includes(task.kind)) && (task.app_category || "ours") === cat);
   const apps = new Map<string, { name: string; image: string | null; tasks: any[] }>();
   for (const task of pending) if (task.app_name) {
     const a = apps.get(task.app_name) ?? { name: task.app_name, image: task.app_image || task.image_url, tasks: [] as any[] };
@@ -59,7 +60,7 @@ function Tasks() {
     if (demo) { toast(t("openInTelegram")); return; }
     try {
       const r = await completeTask({ data: { initData, taskId: task.id } });
-      setData((d) => d && { ...d, me: { ...d.me, balance: r.balance, power_level: r.power_level }, done: [...d.done, task.id] });
+      setData((d) => d && { ...d, me: { ...d.me, balance: r.balance, power_level: r.power_level }, done: [...new Set([...d.done, task.id])] });
       haptic("success");
       toast.success(`+${fmt(task.reward)} ORAI · +2 tickets`);
     } catch (e: any) {

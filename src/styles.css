@@ -43,9 +43,11 @@
   --color-game-coral: var(--game-coral);
   --color-game-mint: var(--game-mint);
   --color-game-ink: var(--game-ink);
+  --color-wallet-art-foreground: var(--wallet-art-foreground);
 }
 
 :root {
+  --wallet-art-foreground: oklch(0.16 0 0);
   --game-sky: oklch(0.8 0.13 205);
   --game-violet: oklch(0.82 0.1 305);
   --game-pink: oklch(0.8 0.16 345);
@@ -87,6 +89,7 @@
 .nav-label { max-width: 0; opacity: 0; overflow: hidden; transition: max-width 360ms ease, opacity 260ms ease; white-space: nowrap; }
 .nav-item[data-active=true] .nav-label { max-width: 80px; opacity: 1; }
 .page-motion { animation: page-enter 260ms cubic-bezier(.2,.8,.2,1) both; will-change: opacity, transform; }
+.app-notifications { --offset: calc(env(safe-area-inset-bottom, 0px) + 88px) !important; }
 .lucky-wheel { background: conic-gradient(from -30deg, var(--game-yellow) 0deg 60deg, var(--game-coral) 60deg 120deg, var(--game-violet) 120deg 180deg, var(--game-sky) 180deg 240deg, var(--game-mint) 240deg 300deg, var(--game-pink) 300deg 360deg); box-shadow: var(--shadow-glass); }
 .game-cover { background: var(--game-blue); box-shadow: var(--shadow-glass); }
 .game-cover-shade { background: linear-gradient(to top, var(--game-ink), transparent 60%); }

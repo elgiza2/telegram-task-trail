@@ -73,8 +73,8 @@ export default function AppShell() {
       <StoreProvider>
         <BackButtonSync />
         <Frame />
-        <Toaster position="top-center" offset={14} duration={2600} visibleToasts={1}
-          toastOptions={{ unstyled: true, classNames: { toast: "glass-strong mx-auto flex w-[calc(100vw-40px)] max-w-sm items-center gap-3 rounded-[22px] px-4 py-3 text-sm font-bold text-foreground shadow-lg", description: "text-xs font-medium text-muted-foreground", icon: "text-primary" } }} />
+        <Toaster className="app-notifications" position="bottom-center" offset={88} mobileOffset={88} duration={3500} visibleToasts={1} closeButton
+          toastOptions={{ classNames: { toast: "glass-strong mx-auto flex w-[calc(100vw-40px)] max-w-sm items-center gap-3 rounded-2xl px-4 py-3 text-sm font-semibold text-foreground", description: "text-xs font-medium text-muted-foreground", icon: "text-primary" } }} />
       </StoreProvider>
     </TonConnectUIProvider>
   );
