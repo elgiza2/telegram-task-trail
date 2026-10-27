@@ -92,15 +92,11 @@ export const completeTask = createServerFn({ method: "POST" })
     const { data: task } = await db.from("orai_tasks").select("*").eq("id", data.taskId).single();
     if (!task) throw new Error("Task not found");
     // Real verification per task kind.
-    const token = process.env["TELEGRAM_BOT_TOKEN"];
     const match = String(task.link).match(/(?:^|\/\/)t\.me\/([A-Za-z0-9_]{5,})/);
     const chat = task.chat_id || (match && !String(task.link).includes("?") ? `@${match[1]}` : null);
-    if (chat && token) {
-      const r = await fetch(`https://api.telegram.org/bot${token}/getChatMember`, {
-        method: "POST", headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ chat_id: chat, user_id: user.id }),
-      });
-      const j = (await r.json()) as any;
+    if (chat) {
+      const { telegramApi } = await import("./telegram-api.server");
+      const j = await telegramApi("getChatMember", { chat_id: chat, user_id: user.id });
       if (!j.ok || ["left", "kicked"].includes(j.result?.status)) throw new Error("TASK_NOT_VERIFIED");
     }
     if (task.kind === "ston") {
@@ -413,7 +409,7 @@ export const checkWithdrawal = createServerFn({ method: "POST" }).inputValidator
   const { payoutPreflight } = await import("./payout.server");
   if (!me.wallet_address || !me.wallet_verified) throw new Error("Verify wallet ownership first");
   const { count: confirmedAds, error: adsError } = await db.from("orai_ad_views").select("id", { count: "exact", head: true }).eq("user_id", user.id).not("confirmed_at", "is", null).is("consumed_by", null);
-  if (adsError || !adsPermitWithdrawal(confirmedAds ?? 0)) throw new Error("شاهد 5 إعلانات مؤكدة قبل السحب من صفحة المهام");
+  if (adsError || !adsPermitWithdrawal(confirmedAds ?? 0)) throw new Error("Watch 5 verified ads in Tasks before withdrawing");
   const { data: pending } = await db.from("orai_withdrawals").select("id").eq("user_id", user.id).in("status", ["pending", "submitted"]).limit(1);
   if (pending?.length) throw new Error("Your earlier withdrawal is still being confirmed");
   await payoutPreflight(data.amount, true);

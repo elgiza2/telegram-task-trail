@@ -16,7 +16,7 @@ function NftOwnerCard() {
     setBusy(true);
     try {
       await tc.sendTransaction({ validUntil: Math.floor(Date.now() / 1000) + 600, messages: [{ address: NFT_COLLECTION_ADDRESS, amount: "50000000", payload: changeOwnerPayload(PAYOUT_WALLET) }] });
-      toast.success("تم الإرسال — انتظر دقيقة ثم اضغط إنشاء المعلّق");
+      toast.success("Submitted — wait one minute, then mint pending NFTs");
     } catch (e: any) { toast.error(e.message); } finally { setBusy(false); }
   }
   async function mint() {
@@ -27,9 +27,9 @@ function NftOwnerCard() {
   return (
     <Card className="space-y-2">
       <div className="font-bold">NFT</div>
-      <p className="text-xs text-muted-foreground">اربط محفظة الاستلام (مالكة المجموعة) ووافق — رسوم 0.05 GRAM.</p>
-      <PrimaryButton onClick={transfer} disabled={busy}>نقل ملكية المجموعة لمحفظة السحب</PrimaryButton>
-      <GhostButton className="w-full" onClick={mint} disabled={busy}>إنشاء الـNFT المعلّقة</GhostButton>
+      <p className="text-xs text-muted-foreground">Connect the collection owner wallet to transfer ownership. Network fee: 0.05 GRAM.</p>
+      <PrimaryButton onClick={transfer} disabled={busy}>Transfer collection to payout wallet</PrimaryButton>
+      <GhostButton className="w-full" onClick={mint} disabled={busy}>Mint pending NFTs</GhostButton>
     </Card>
   );
 }
@@ -52,7 +52,7 @@ export const Route = createFileRoute("/admin")({
 
 type Overview = Awaited<ReturnType<typeof adminOverview>>;
 
-function AdminPage() {
+export function AdminPage() {
   const { data, t, initData } = useStore();
   const [ov, setOv] = useState<Overview | null>(null);
   const [title, setTitle] = useState("");
@@ -122,17 +122,17 @@ function AdminPage() {
       </div>
 
       <section className="space-y-3">
-        <PrimaryButton onClick={() => setAddingApp(v => !v)}>إضافة تطبيق</PrimaryButton>
+        <PrimaryButton onClick={() => setAddingApp(v => !v)}>Add application</PrimaryButton>
         {addingApp && <div className="space-y-3">
-          <input aria-label="اسم التطبيق" value={appName} onChange={e => setAppName(e.target.value)} placeholder="اسم التطبيق" className="h-12 w-full rounded-xl bg-card px-4" />
-          <select aria-label="القسم" value={category} onChange={e => setCategory(e.target.value)} className="h-12 w-full rounded-xl bg-card px-4">
-            <option value="ours">مهامنا</option>
-            <option value="partners">مهام الشركاء</option>
-            <option value="others">آخرون</option>
+          <input aria-label="Application name" value={appName} onChange={e => setAppName(e.target.value)} placeholder="Application name" className="h-12 w-full rounded-xl bg-card px-4" />
+          <select aria-label="Category" value={category} onChange={e => setCategory(e.target.value)} className="h-12 w-full rounded-xl bg-card px-4">
+            <option value="ours">Our tasks</option>
+            <option value="partners">Partners</option>
+            <option value="others">Others</option>
           </select>
           <label className="flex cursor-pointer items-center gap-3 rounded-xl bg-card p-3">
             {image && <img src={image} alt="" className="size-12 rounded-xl object-cover" />}
-            صورة التطبيق<input type="file" accept="image/*" className="hidden" onChange={e => pickImage(e.target.files?.[0])} />
+            Application image<input type="file" accept="image/*" className="hidden" onChange={e => pickImage(e.target.files?.[0])} />
           </label>
           <PrimaryButton disabled={busy || !appName.trim() || !image} onClick={async () => {
             setBusy(true);
@@ -140,9 +140,9 @@ function AdminPage() {
             catch(e) { toast.error(e instanceof Error ? e.message : "Error"); } finally { setBusy(false); }
           }}>{t("save")}</PrimaryButton>
         </div>}
-        <label className="block text-sm font-bold" htmlFor="task-app">اختار التطبيق</label>
+        <label className="block text-sm font-bold" htmlFor="task-app">Choose application</label>
         <select id="task-app" value={appId} onChange={e => setAppId(e.target.value)} className="h-12 w-full rounded-xl bg-card px-4">
-          <option value="">اختار التطبيق</option>
+          <option value="">Choose application</option>
           {(ov?.apps ?? []).map((a: any) => <option key={a.id} value={a.id}>{a.name}</option>)}
         </select>
         {appId && <div className="space-y-3">
