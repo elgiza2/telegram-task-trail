@@ -44,7 +44,7 @@ function Tasks() {
     return () => { window.removeEventListener("focus", onFocus); document.removeEventListener("visibilitychange", onFocus); };
   });
   if (!data) return null;
-  const pending = data.tasks.filter((task: any) => !BUILT_IN.includes(task.kind) && !data.done.includes(task.id) && (task.app_category || "ours") === cat);
+  const pending = data.tasks.filter((task: any) => (task.app_name || !BUILT_IN.includes(task.kind)) && !data.done.includes(task.id) && (task.app_category || "ours") === cat);
   const apps = new Map<string, { name: string; image: string | null; tasks: any[] }>();
   for (const task of pending) if (task.app_name) {
     const a = apps.get(task.app_name) ?? { name: task.app_name, image: task.app_image || task.image_url, tasks: [] as any[] };
@@ -83,7 +83,7 @@ function Tasks() {
   }
   const title = (task: any) => task.title_i18n?.[lang] || task.title;
   const total = (list: any[]) => list.reduce((s, task) => s + Number(task.reward || 0), 0);
-  const empty = pending.length === 0 && !(cat === "ours") && !(cat === "others" && goals.length);
+  const empty = pending.length === 0 && !(cat === "others" && goals.length);
   return (
     <div>
       <div className="mb-3"><Segmented value={cat} onChange={(v) => { setCat(v); setApp(null); }} options={[
@@ -92,7 +92,6 @@ function Tasks() {
         { key: "others", label: "Others" },
       ]} /></div>
       <div className="space-y-3">
-        {cat === "ours" && <ShareTasks onClaim={(task) => claim(task)} />}
         {cat === "others" && <AdTask />}
         {cat === "others" && goals.map((g) => {
           const ready = refCount >= g.goal;
@@ -114,7 +113,8 @@ function Tasks() {
               <ChevronDown aria-hidden="true" className={`size-5 shrink-0 transition-transform duration-300 ${app === a.name ? "rotate-180" : ""}`} />
             </GhostButton>
             {app === a.name && <div className="mt-2 space-y-2">
-              {a.tasks.map((task: any) => <TaskRow key={task.id} image={a.image} title={title(task)} reward={Number(task.reward)}
+              {a.tasks.some((task: any) => BUILT_IN.includes(task.kind)) && <ShareTasks onClaim={(task) => claim(task)} />}
+              {a.tasks.filter((task: any) => !BUILT_IN.includes(task.kind)).map((task: any) => <TaskRow key={task.id} image={a.image} title={title(task)} reward={Number(task.reward)}
                 label={opened[task.id] ? t("claim") : "Go"} onClick={() => onTask(task)} />)}
             </div>}
           </div>

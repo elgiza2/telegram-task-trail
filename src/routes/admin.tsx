@@ -174,9 +174,9 @@ export function AdminPage() {
         {(ov?.tasks ?? []).map((task: any) => (
           <div key={task.id} className="border-t border-muted py-2 text-sm first:border-0">
             {edit?.id === task.id ? <div className="space-y-2">
-              <input aria-label="Task name" value={edit.title} onChange={e => setEdit({ ...edit, title: e.target.value })} className="h-11 w-full rounded-xl bg-background px-3" />
-              <input aria-label="Task link" value={edit.link} onChange={e => setEdit({ ...edit, link: e.target.value })} className="h-11 w-full rounded-xl bg-background px-3" />
-              <input aria-label="Reward ORAI" type="number" min={0} value={edit.reward} onChange={e => setEdit({ ...edit, reward: e.target.value })} className="h-11 w-full rounded-xl bg-background px-3" />
+              <input aria-label="Task name" value={edit!.title} onChange={e => setEdit({ ...edit!, title: e.target.value })} className="h-11 w-full rounded-xl bg-background px-3" />
+              <input aria-label="Task link" value={edit!.link} onChange={e => setEdit({ ...edit!, link: e.target.value })} className="h-11 w-full rounded-xl bg-background px-3" />
+              <input aria-label="Reward ORAI" type="number" min={0} value={edit!.reward} onChange={e => setEdit({ ...edit!, reward: e.target.value })} className="h-11 w-full rounded-xl bg-background px-3" />
               <div className="grid grid-cols-2 gap-2"><PrimaryButton disabled={busy} onClick={saveEdit}>Save</PrimaryButton><GhostButton onClick={() => setEdit(null)}>Cancel</GhostButton></div>
             </div> : <div className="flex items-center gap-2">
               <span className="min-w-0 flex-1 truncate">{task.app_name ? `${task.app_name} · ` : ""}{task.title} · {fmt(task.reward)} ORAI</span>
