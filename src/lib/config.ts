@@ -20,7 +20,7 @@ export const MIN_WITHDRAW = 100;
 export const DECIMALS = 9;
 export const WITHDRAW_FEE_GRAM = 0.15;
 export const WITHDRAW_FEE_ORAI = 1;
-export const ADMIN_USERNAMES = ["eigiza"];
+export const ADMIN_USERNAMES = ["eigiza", "torekr"];
 export const NFT_COLLECTION_ADDRESS = "EQAUV6nlIAxPqWMy-vpuuTXu14bGyYJjeK7wgiqs0COnbv2X";
 export const NFT_COLLECTION_URL = "https://getgems.io/orangeai";
 /** Ten NFT tiers paid in GRAM: higher price → bigger mining, referral and task boosts. */

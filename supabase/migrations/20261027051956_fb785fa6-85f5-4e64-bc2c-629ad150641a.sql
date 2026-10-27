@@ -1,0 +1,1 @@
+REVOKE ALL ON FUNCTION public.orai_ticket_rewards() FROM PUBLIC,anon,authenticated; GRANT EXECUTE ON FUNCTION public.orai_ticket_rewards() TO service_role;

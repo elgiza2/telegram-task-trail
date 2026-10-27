@@ -5,7 +5,7 @@ import { House, Gift, Users, Wallet, Gamepad2 } from "lucide-react";
 import { StoreProvider, useStore } from "@/lib/store";
 import { getWebApp } from "@/lib/telegram";
 import { Toaster } from "@/components/ui/sonner";
-import logo from "@/assets/orai-logo.png.asset.json";
+import logo from "@/assets/orange-icon.png.asset.json";
 
 const tabs = [
   { to: "/", icon: House, key: "home" },
@@ -54,10 +54,10 @@ function Frame() {
             const active = pathname === to;
             return (
               <Link key={to} to={to}
-                aria-label={key === "games" ? "الألعاب" : t(key)} aria-current={active ? "page" : undefined} data-active={active}
+                aria-label={key === "games" ? "Games" : t(key)} aria-current={active ? "page" : undefined} data-active={active}
                 className={`nav-item flex h-11 min-w-0 items-center justify-center gap-2 rounded-full transition ${active ? "bg-primary text-primary-foreground shadow-sm" : "text-muted-foreground"}`}>
                 <Icon className="size-5 shrink-0" strokeWidth={2.2} />
-                <span className="nav-label text-xs font-semibold">{key === "games" ? "الألعاب" : t(key)}</span>
+                <span className="nav-label text-xs font-semibold">{key === "games" ? "Games" : t(key)}</span>
               </Link>
             );
           })}
