@@ -2633,6 +2633,16 @@ export type Database = {
           telegram_id: number
         }[]
       }
+      orai_arcade_leaderboard: {
+        Args: { p_game: string }
+        Returns: {
+          best: number
+          first_name: string
+          photo_url: string
+          user_id: number
+          username: string
+        }[]
+      }
       orai_arcade_start: {
         Args: { p_game: string; p_state: Json; p_user: number }
         Returns: {
