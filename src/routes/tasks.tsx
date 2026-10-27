@@ -1,16 +1,17 @@
 import { AdTask } from "@/components/AdTask";
 import { ShareTasks } from "@/components/ShareTasks";
+import { TaskRow } from "@/components/TaskRow";
 import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
+import { Ticket } from "lucide-react";
 import { useStore } from "@/lib/store";
-import { completeTask } from "@/lib/api.functions";
-import { REFERRAL_BONUS } from "@/lib/config";
+import { claimReferralGoal, completeTask } from "@/lib/api.functions";
+import { REFERRAL_GOALS } from "@/lib/config";
 import { openLink, haptic } from "@/lib/telegram";
 import { fmt } from "@/lib/ton";
-import invitation from "@/assets/referral-invitation.jpg";
-import { shareReferral } from "@/lib/referral-share";
-import { CoinIcon, GhostButton, ORAI_ICON, PrimaryButton, Segmented } from "@/components/ui-kit";
+import team from "@/assets/orange-team.jpg.asset.json";
+import { CoinIcon, GhostButton, ORAI_ICON, Segmented } from "@/components/ui-kit";
 
 export const Route = createFileRoute("/tasks")({
   ssr: false,
@@ -19,22 +20,22 @@ export const Route = createFileRoute("/tasks")({
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
       { title: "Orange — Tasks" },
-      { name: "description", content: "Complete tasks and invite friends to earn ORAI." },
+      { name: "description", content: "Complete tasks to earn ORAI and play tickets." },
       { property: "og:title", content: "ORAI Tasks" },
-      { property: "og:description", content: "Complete tasks and invite friends to earn ORAI." },
+      { property: "og:description", content: "Complete tasks to earn ORAI and play tickets." },
     ],
   }),
   component: Tasks,
 });
 
-const BOT_USERNAME = "sramaibot";
+const BUILT_IN = ["story", "share"];
 
 function Tasks() {
-  const { data, t, x, initData, demo, setData, lang } = useStore();
-  const tab = "tasks" as const;
+  const { data, t, x, initData, demo, setData, lang, refresh } = useStore();
   const [app, setApp] = useState<string | null>(null);
   const [cat, setCat] = useState<"ours" | "partners" | "others">("ours");
   const [opened, setOpened] = useState<Record<string, boolean>>({});
+  const [busyGoal, setBusyGoal] = useState<number | null>(null);
   const waiting = useRef<any>(null);
   useEffect(() => {
     const onFocus = () => { const task = waiting.current; if (task) { waiting.current = null; void claim(task, true); } };
@@ -43,15 +44,16 @@ function Tasks() {
     return () => { window.removeEventListener("focus", onFocus); document.removeEventListener("visibilitychange", onFocus); };
   });
   if (!data) return null;
-  const me = data.me;
-  const link = `https://t.me/${BOT_USERNAME}?start=ref_${me.id}`;
-  const pending = data.tasks.filter((task: any) => !data.done.includes(task.id) && (task.app_category || "ours") === cat);
+  const pending = data.tasks.filter((task: any) => !BUILT_IN.includes(task.kind) && !data.done.includes(task.id) && (task.app_category || "ours") === cat);
   const apps = new Map<string, { name: string; image: string | null; tasks: any[] }>();
   for (const task of pending) if (task.app_name) {
     const a = apps.get(task.app_name) ?? { name: task.app_name, image: task.app_image || task.image_url, tasks: [] as any[] };
     a.tasks.push(task); apps.set(task.app_name, a);
   }
   const shown = pending.filter((task: any) => !task.app_name);
+  const refCount = Number((data as any).referralCount ?? data.referrals.length);
+  const claimedGoals: number[] = (data as any).claimedGoals ?? [];
+  const goals = REFERRAL_GOALS.filter((g) => !claimedGoals.includes(g.goal));
 
   async function claim(task: any, silent = false) {
     if (demo) { toast(t("openInTelegram")); return; }
@@ -73,54 +75,54 @@ function Tasks() {
     }
     void claim(task);
   }
-  const ar = lang === "ar";
+  async function claimGoal(goal: number) {
+    if (demo) { toast(t("openInTelegram")); return; }
+    setBusyGoal(goal);
+    try { const r = await claimReferralGoal({ data: { initData, goal } }); toast.success(`+${r.reward} ORAI`); await refresh(); }
+    catch (e: any) { toast.error(e?.message || "Unable to claim"); } finally { setBusyGoal(null); }
+  }
+  const title = (task: any) => task.title_i18n?.[lang] || task.title;
+  const total = (list: any[]) => list.reduce((s, task) => s + Number(task.reward || 0), 0);
+  const empty = pending.length === 0 && !(cat === "ours") && !(cat === "others" && goals.length);
   return (
     <div>
-      {tab === "tasks" && <div className="mb-3"><Segmented value={cat} onChange={(v) => { setCat(v); setApp(null); }} options={[
-        { key: "ours", label: ar ? "مهامنا" : "Our tasks" },
-        { key: "partners", label: ar ? "الشركاء" : "Partners" },
-        { key: "others", label: ar ? "آخرون" : "Others" },
-      ]} /></div>}
-      {cat === "others" && <AdTask />}
-      {cat === "ours" && tab === "tasks" && <ShareTasks />}
-      {tab === "tasks" ? (
-        pending.length === 0
-          ? <div className="rounded-2xl bg-card py-12 text-center text-sm font-bold text-muted-foreground">{x("allDone")}</div>
-          : <div className="space-y-3">
-            {[...apps.values()].map((a) => (
-              <div key={a.name}>
-                <GhostButton aria-expanded={app === a.name} onClick={() => setApp(app === a.name ? null : a.name)} className="flex h-auto min-h-20 w-full items-center gap-3 p-3 text-start">
-                  <CoinIcon src={a.image || ORAI_ICON} className="size-12" />
-                  <span className="min-w-0 flex-1 truncate font-bold">{a.name}</span>
-                  <span className="text-xs text-muted-foreground">{a.tasks.length}</span>
-                  <span aria-hidden="true">{app === a.name ? "−" : "+"}</span>
-                </GhostButton>
-                {app === a.name && <div className="mt-2 divide-y divide-muted">
-                  {a.tasks.map((task: any) => <div key={task.id} className="flex items-center gap-3 px-2 py-3">
-                    <CoinIcon src={a.image || ORAI_ICON} className="size-10" />
-                    <span className="min-w-0 flex-1 break-words font-bold">{task.title_i18n?.[lang] || task.title}<span className="mt-1 block text-xs text-muted-foreground">+2 tickets</span></span>
-                    <GhostButton onClick={() => onTask(task)} className="shrink-0">{opened[task.id] ? t("claim") : t("start")}</GhostButton>
-                  </div>)}
-                </div>}
-              </div>
-            ))}
-            {shown.length > 0 && <div className="overflow-hidden rounded-2xl bg-card">
-            {shown.map((task: any, i: number) => (
-              <div key={task.id} className={`flex items-center gap-3 px-4 py-3.5 ${i ? "border-t border-muted" : ""}`}>
-                <CoinIcon src={task.image_url || ORAI_ICON} className="size-11" />
-                <div className="min-w-0 flex-1">
-                  <div className="truncate font-bold">{task.title_i18n?.[lang] || task.title}</div>
-                  <div className="mt-0.5 text-xs font-bold text-muted-foreground" dir="ltr">ORAI</div>
-                </div>
-                <button onClick={() => onTask(task)}
-                  className={`h-9 shrink-0 rounded-full px-4 text-xs font-bold transition active:scale-95 ${opened[task.id] ? "btn-orange" : "bg-accent text-primary"}`} dir="ltr">
-                  {opened[task.id] ? t("claim") : `+${fmt(task.reward)}`}
-                </button>
-              </div>
-            ))}
-          </div>}
+      <div className="mb-3"><Segmented value={cat} onChange={(v) => { setCat(v); setApp(null); }} options={[
+        { key: "ours", label: "Our tasks" },
+        { key: "partners", label: "Partners" },
+        { key: "others", label: "Others" },
+      ]} /></div>
+      <div className="space-y-3">
+        {cat === "ours" && <ShareTasks onClaim={(task) => claim(task)} />}
+        {cat === "others" && <AdTask />}
+        {cat === "others" && goals.map((g) => {
+          const ready = refCount >= g.goal;
+          return <TaskRow key={g.goal} image={team.url} title={`Invite ${g.goal} friends (${Math.min(refCount, g.goal)}/${g.goal})`} reward={g.reward} tickets={0}
+            label={busyGoal === g.goal ? "…" : ready ? "Claim" : "Go"} disabled={busyGoal === g.goal}
+            onClick={() => ready ? void claimGoal(g.goal) : toast(`Invite ${g.goal - refCount} more friends from the Friends page`)} />;
+        })}
+        {[...apps.values()].map((a) => (
+          <div key={a.name}>
+            <GhostButton aria-expanded={app === a.name} onClick={() => setApp(app === a.name ? null : a.name)} className="flex h-auto min-h-20 w-full items-center gap-3 p-3 text-start">
+              <CoinIcon src={a.image || ORAI_ICON} className="size-12" />
+              <span className="min-w-0 flex-1">
+                <span className="block truncate font-bold">{a.name}</span>
+                <span className="mt-1 flex items-center gap-2 text-xs text-muted-foreground" dir="ltr">
+                  <span className="flex items-center gap-1"><CoinIcon src={ORAI_ICON} className="size-3.5" />+{fmt(total(a.tasks))}</span>
+                  <span className="flex items-center gap-1"><Ticket className="size-3.5" />+{a.tasks.length * 2}</span>
+                </span>
+              </span>
+              <span aria-hidden="true">{app === a.name ? "−" : "+"}</span>
+            </GhostButton>
+            {app === a.name && <div className="mt-2 space-y-2">
+              {a.tasks.map((task: any) => <TaskRow key={task.id} image={a.image} title={title(task)} reward={Number(task.reward)}
+                label={opened[task.id] ? t("claim") : "Go"} onClick={() => onTask(task)} />)}
+            </div>}
           </div>
-      ) : null}
+        ))}
+        {shown.map((task: any) => <TaskRow key={task.id} image={task.image_url} title={title(task)} reward={Number(task.reward)}
+          label={opened[task.id] ? t("claim") : "Go"} onClick={() => onTask(task)} />)}
+        {empty && <div className="rounded-2xl bg-card py-12 text-center text-sm font-bold text-muted-foreground">{x("allDone")}</div>}
+      </div>
     </div>
   );
 }
