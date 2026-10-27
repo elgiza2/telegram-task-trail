@@ -25,6 +25,7 @@ import { Route as SwapRouteImport } from './routes/swap'
 import { Route as TasksRouteImport } from './routes/tasks'
 import { Route as WalletRouteImport } from './routes/wallet'
 import { Route as WhitepaperRouteImport } from './routes/whitepaper'
+import { Route as ApiPublicAdsMonetagRouteImport } from './routes/api/public/ads/monetag'
 import { Route as ApiPublicJobsBotRouteImport } from './routes/api/public/jobs/bot'
 import { Route as ApiPublicJobsCampaignRouteImport } from './routes/api/public/jobs/campaign'
 import { Route as ApiPublicJobsMarketRouteImport } from './routes/api/public/jobs/market'
@@ -111,6 +112,11 @@ const WhitepaperRoute = WhitepaperRouteImport.update({
   path: '/whitepaper',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiPublicAdsMonetagRoute = ApiPublicAdsMonetagRouteImport.update({
+  id: '/api/public/ads/monetag',
+  path: '/api/public/ads/monetag',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ApiPublicJobsBotRoute = ApiPublicJobsBotRouteImport.update({
   id: '/api/public/jobs/bot',
   path: '/api/public/jobs/bot',
@@ -155,6 +161,7 @@ export interface FileRoutesByFullPath {
   '/tasks': typeof TasksRoute
   '/wallet': typeof WalletRoute
   '/whitepaper': typeof WhitepaperRoute
+  '/api/public/ads/monetag': typeof ApiPublicAdsMonetagRoute
   '/api/public/jobs/bot': typeof ApiPublicJobsBotRoute
   '/api/public/jobs/campaign': typeof ApiPublicJobsCampaignRoute
   '/api/public/jobs/market': typeof ApiPublicJobsMarketRoute
@@ -178,6 +185,7 @@ export interface FileRoutesByTo {
   '/tasks': typeof TasksRoute
   '/wallet': typeof WalletRoute
   '/whitepaper': typeof WhitepaperRoute
+  '/api/public/ads/monetag': typeof ApiPublicAdsMonetagRoute
   '/api/public/jobs/bot': typeof ApiPublicJobsBotRoute
   '/api/public/jobs/campaign': typeof ApiPublicJobsCampaignRoute
   '/api/public/jobs/market': typeof ApiPublicJobsMarketRoute
@@ -202,6 +210,7 @@ export interface FileRoutesById {
   '/tasks': typeof TasksRoute
   '/wallet': typeof WalletRoute
   '/whitepaper': typeof WhitepaperRoute
+  '/api/public/ads/monetag': typeof ApiPublicAdsMonetagRoute
   '/api/public/jobs/bot': typeof ApiPublicJobsBotRoute
   '/api/public/jobs/campaign': typeof ApiPublicJobsCampaignRoute
   '/api/public/jobs/market': typeof ApiPublicJobsMarketRoute
@@ -227,6 +236,7 @@ export interface FileRouteTypes {
     | '/tasks'
     | '/wallet'
     | '/whitepaper'
+    | '/api/public/ads/monetag'
     | '/api/public/jobs/bot'
     | '/api/public/jobs/campaign'
     | '/api/public/jobs/market'
@@ -250,6 +260,7 @@ export interface FileRouteTypes {
     | '/tasks'
     | '/wallet'
     | '/whitepaper'
+    | '/api/public/ads/monetag'
     | '/api/public/jobs/bot'
     | '/api/public/jobs/campaign'
     | '/api/public/jobs/market'
@@ -273,6 +284,7 @@ export interface FileRouteTypes {
     | '/tasks'
     | '/wallet'
     | '/whitepaper'
+    | '/api/public/ads/monetag'
     | '/api/public/jobs/bot'
     | '/api/public/jobs/campaign'
     | '/api/public/jobs/market'
@@ -297,6 +309,7 @@ export interface RootRouteChildren {
   TasksRoute: typeof TasksRoute
   WalletRoute: typeof WalletRoute
   WhitepaperRoute: typeof WhitepaperRoute
+  ApiPublicAdsMonetagRoute: typeof ApiPublicAdsMonetagRoute
   ApiPublicJobsBotRoute: typeof ApiPublicJobsBotRoute
   ApiPublicJobsCampaignRoute: typeof ApiPublicJobsCampaignRoute
   ApiPublicJobsMarketRoute: typeof ApiPublicJobsMarketRoute
@@ -418,6 +431,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof WhitepaperRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/public/ads/monetag': {
+      id: '/api/public/ads/monetag'
+      path: '/api/public/ads/monetag'
+      fullPath: '/api/public/ads/monetag'
+      preLoaderRoute: typeof ApiPublicAdsMonetagRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/public/jobs/bot': {
       id: '/api/public/jobs/bot'
       path: '/api/public/jobs/bot'
@@ -473,6 +493,7 @@ const rootRouteChildren: RootRouteChildren = {
   TasksRoute: TasksRoute,
   WalletRoute: WalletRoute,
   WhitepaperRoute: WhitepaperRoute,
+  ApiPublicAdsMonetagRoute: ApiPublicAdsMonetagRoute,
   ApiPublicJobsBotRoute: ApiPublicJobsBotRoute,
   ApiPublicJobsCampaignRoute: ApiPublicJobsCampaignRoute,
   ApiPublicJobsMarketRoute: ApiPublicJobsMarketRoute,
