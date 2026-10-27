@@ -35,3 +35,10 @@
 - [ ] New leveling: upgrades with TON / ORAI, points from tasks & invites, NFT boosts (replace hold-in-wallet)
 - [ ] Stronger referrals: milestone rewards, 2-level commission, weekly leaderboard
 - [ ] Real ORAI price feed (verify existing market snapshot)
+- [ ] Top safe area for Telegram back button
+- [ ] Redesign task/mining/referral coin displays
+- [ ] Vercel native deploy with Supabase keys on Vercel (needs server build change)
+- [ ] Mining shows user photo
+- [ ] Games: spin on top, remove ticket texts & card subtitles, better ticket balance, auto daily 5
+- [ ] Redesign NFT cards
+- [ ] Full game redesign; crash with Telegram duck (licensing blocked → use Orange art)

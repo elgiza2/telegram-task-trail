@@ -55,7 +55,7 @@ function Home() {
   return <div className="flex flex-col items-center pt-5 text-center">
 
     <MiningRing progress={started === null ? 0 : elapsed / total}>
-      <img src={me.photo_url || mascot.url} alt="" className="size-40 rounded-full object-cover" />
+      <img src={me.photo_url || (typeof window!=="undefined"?(window as any).Telegram?.WebApp?.initDataUnsafe?.user?.photo_url:"") || mascot.url} alt="" className="size-40 rounded-full object-cover" />
     </MiningRing>
     {started !== null && !done && <div className="mt-3 text-sm tabular-nums text-muted-foreground">{clock}</div>}
     <div className="mt-5 text-sm text-muted-foreground">{t("balance")}</div>
