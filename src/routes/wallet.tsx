@@ -68,7 +68,7 @@ function WalletPage() {
  }
  const linked = !!address;
  const usd = market?.orai.priceUsd ? Number(me.balance) * market.orai.priceUsd : null;
- const assets = [{ s: "ORAI", name: market?.orai.name || "Orange AI", icon: ORAI_ICON, price: market?.orai.priceUsd, balance: Number(me.balance) }, { s: "GRAM", name: "Gram", icon: GRAM_ICON, price: market?.gram.priceUsd, balance: Number((me as unknown as { gram_balance?: number }).gram_balance ?? 0) }];
+ const assets = [{ s: "ORAI", name: market?.orai.name || "Orange AI", icon: ORAI_ICON, price: market?.orai.priceUsd, balance: Number(me.balance) }];
  return <div className="space-y-5">
      <div className="relative overflow-hidden rounded-3xl bg-card text-wallet-art-foreground">
      <img src={banner} alt="" width={1376} height={768} className="absolute inset-0 h-full w-full object-cover object-right" />
