@@ -1,4 +1,5 @@
 # Roadmap
+- [ ] Apply a specialized design skill; redesign Mining, Referrals and Arcade without top headings and respect Telegram safe areas
 - [ ] Rework Arcade layout after latest feedback and add ORAI mark to balances and rewards throughout site
 - [ ] Replace Telegram connector and login-verification credential with newly supplied bot token
 - [ ] Show Monetag as a normal task only under Others; preserve ad consent and verified rewards
