@@ -35,7 +35,7 @@ const NFT_DESCRIPTIONS = [
   ["ملك المجموعة بتاجه البلوري.", "The collection king with a crystal crown."],
 ];
 
-function NftTab() {
+export function NftTab() {
   const { data, t, initData, demo, lang } = useStore();
   const ar = lang === "ar";
   const address = useTonAddress();
@@ -91,63 +91,4 @@ function NftTab() {
   );
 }
 
-export function PowerSection() {
-  const { data, t, x, demo, initData, patchMe, lang } = useStore();
-  const ar = lang === "ar";
-  const [tab, setTab] = useState<"power" | "nft">("power");
-  const [visible, setVisible] = useState(4);
-  const [holdings, setHoldings] = useState<number | null>(null);
-  const [price, setPrice] = useState(0);
-
-  useEffect(() => {
-    if (demo) return;
-    let active = true;
-    async function check() {
-      try {
-        const result: any = await verifyHoldings({ data: { initData } });
-        if (!active) return;
-        patchMe(result);
-        if (typeof result.holdings === "number") setHoldings(result.holdings);
-        if (result.market?.orai?.priceUsd) setPrice(result.market.orai.priceUsd);
-      } catch { /* silent auto-check */ }
-    }
-    void check();
-    const timer = setInterval(check, 60000);
-    window.addEventListener("focus", check);
-    return () => { active = false; clearInterval(timer); window.removeEventListener("focus", check); };
-  }, [demo, initData]);
-
-  if (!data) return null;
-  const me = data.me;
-  const lvl = me.power_level ?? 0;
-  const current = (POWER_LEVELS[lvl] ?? POWER_LEVELS[0])!;
-  const next = POWER_LEVELS[lvl + 1];
-  const usd = holdings !== null && price ? holdings * price : null;
-  const progress = next && usd !== null ? Math.min(100, Math.max(0, ((usd - current.price) / (next.price - current.price)) * 100)) : 0;
-  const tiers = POWER_LEVELS.slice(Math.max(1, lvl)).slice(0, visible);
-  const boost = () => { haptic("light"); openLink(SWAP_URL); };
-
-  return <div>
-    <Segmented value={tab} onChange={setTab}
-      options={[{ key: "power", label: t("power") }, { key: "nft", label: "NFT" }]} />
-
-    {tab === "nft" ? <NftTab /> : <>
-      <div className="flex items-center justify-between border-b border-border pb-4">
-        <div><div className="text-xs text-muted-foreground">{ar ? "قوة التعدين" : "Mining power"}</div><div className="mt-1 text-xl">{t("level")} {lvl}</div></div>
-        <div className="text-end"><div className="text-xs text-muted-foreground">ORAI / {ar ? "يوم" : "day"}</div><div className="mt-1 text-xl tabular-nums">{fmt(Number(me.mining_rate_daily ?? 0.1), 4)}</div></div>
-      </div>
-      <div className="mt-4 grid grid-cols-2 gap-3">
-        {tiers.map((l) => {
-          const active = l.level === lvl;
-          return <button key={l.level} onClick={active ? undefined : boost} className={`rounded-lg p-4 text-start transition active:scale-[0.97] ${active ? "bg-primary text-primary-foreground" : "bg-card"}`}>
-            <div className={`text-xs font-bold ${active ? "opacity-80" : "text-muted-foreground"}`}>{ar ? "المستوى" : "Level"} {l.level}</div>
-            <div className="mt-2 text-2xl font-bold tabular-nums" dir="ltr">${fmt(l.price, 2)}</div>
-            <div className={`mt-3 rounded-xl px-2.5 py-1.5 text-center text-xs font-bold tabular-nums ${active ? "bg-primary-foreground/20" : "bg-accent text-primary"}`} dir="ltr">+${fmt(l.perDay, 2)} / {ar ? "يوم" : "day"}</div>
-          </button>;
-        })}
-      </div>
-      {POWER_LEVELS.length - Math.max(1, lvl) > visible && <GhostButton className="mt-4 w-full" onClick={() => setVisible(v => v + 20)}>{x("loadMore")}</GhostButton>}
-      <p className="mt-4 text-xs text-muted-foreground">{x("estimate")}</p>
-    </>}
-  </div>;
-}
+export function PowerSection() { return <NftTab />; }

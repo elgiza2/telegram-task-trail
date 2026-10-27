@@ -75,11 +75,11 @@
   --border: oklch(0.85 0 0 / 0.6);
   --input: oklch(0.9 0 0);
   --ring: var(--primary);
-  --glass: oklch(1 0 0 / 0.5);
-  --glass-strong: oklch(1 0 0 / 0.7);
+  --glass: oklch(1 0 0 / 0.36);
+  --glass-strong: oklch(1 0 0 / 0.56);
   --glass-edge: oklch(1 0 0 / 0.92);
   --gradient-orange: linear-gradient(140deg, var(--primary), var(--secondary));
-  --shadow-glass: 0 1px 0 var(--glass-edge) inset, 0 8px 28px oklch(0 0 0 / 0.09);
+  --shadow-glass: 0 1px 0 var(--glass-edge) inset, 0 -1px 0 oklch(1 0 0 / 0.3) inset, 0 6px 22px oklch(0 0 0 / 0.07);
   --shadow-orange: 0 4px 12px oklch(0 0 0 / 0.12);
 }
 .nav-item { flex: 0 0 44px; transition: flex-basis 360ms ease, background 300ms ease; }
@@ -88,6 +88,10 @@
 .nav-item[data-active=true] .nav-label { max-width: 80px; opacity: 1; }
 .page-motion { animation: page-enter 300ms ease both; }
 .lucky-wheel { background: conic-gradient(from -30deg, var(--game-yellow) 0deg 60deg, var(--game-coral) 60deg 120deg, var(--game-violet) 120deg 180deg, var(--game-sky) 180deg 240deg, var(--game-mint) 240deg 300deg, var(--game-pink) 300deg 360deg); box-shadow: var(--shadow-glass); }
+.game-cover { background: var(--game-blue); box-shadow: var(--shadow-glass); }
+.game-cover-shade { background: linear-gradient(to top, var(--game-ink), transparent 60%); }
+.game-cover-badge { color: var(--foreground); background: var(--glass-strong); backdrop-filter: blur(12px); }
+.spin-banner { background: var(--game-yellow); color: var(--game-ink); }
 @keyframes page-enter { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
 @media (prefers-reduced-motion: reduce) { .nav-item, .nav-label { transition: none; } .page-motion { animation: none; } }
 

@@ -1,4 +1,7 @@
 # Roadmap
+- [ ] Refine translucent iOS-inspired controls without crowding the redesigned pages
+- [ ] Keep redesigned pages uncluttered; collapse secondary collectible details
+- [ ] Remove Power control and legacy holding-tier presentation from Mining without changing financial rules implicitly
 - [ ] Reconnect Telegram in the new workspace; previous workspace connection IDs are invalid
 - [ ] Apply a specialized design skill; redesign Mining, Referrals and Arcade without top headings and respect Telegram safe areas
 - [ ] Rework Arcade layout after latest feedback and add ORAI mark to balances and rewards throughout site

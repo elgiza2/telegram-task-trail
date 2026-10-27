@@ -7,8 +7,8 @@ import { startMining, claimMining } from "@/lib/api.functions";
 import { MINING_HOURS } from "@/lib/config";
 import { fmt } from "@/lib/ton";
 import { haptic } from "@/lib/telegram";
-import { CoinIcon, ORAI_ICON, PrimaryButton } from "@/components/ui-kit";
-import mascot from "@/assets/orai-mascot.jpg.asset.json";
+import { CoinIcon, ORAI_ICON, PrimaryButton, GhostButton } from "@/components/ui-kit";
+import mascot from "@/assets/orange-captain.jpg.asset.json";
 
 export const Route = createFileRoute("/")({ ssr: false, head: () => ({ meta: [
   { title: "Orange — Mining" }, { name: "description", content: "Mine ORAI continuously and claim every two hours." },
@@ -34,6 +34,7 @@ function Home() {
   const { data, t, initData, demo, patchMe } = useStore();
   const [now, setNow] = useState(Date.now());
   const [busy, setBusy] = useState(false);
+  const [collectibles, setCollectibles] = useState(false);
   useEffect(() => { const timer = setInterval(() => setNow(Date.now()), 1000); return () => clearInterval(timer); }, []);
   if (!data) return null;
   const me = data.me;
@@ -51,8 +52,8 @@ function Home() {
     try { const result = done ? await claimMining({ data: { initData } }) : await startMining({ data: { initData } }); patchMe(result); haptic("success"); }
     catch (error: any) { toast.error(error.message); } finally { setBusy(false); }
   }
-  return <div className="flex flex-col items-center pt-2 text-center">
-    <header className="mb-6 flex w-full items-center justify-between"><h1 className="text-xl font-semibold">Orange</h1><span className="text-xs text-muted-foreground">ORAI · {t("mining")}</span></header>
+  return <div className="flex flex-col items-center pt-5 text-center">
+
     <MiningRing progress={started === null ? 0 : elapsed / total}>
       <img src={me.photo_url || mascot.url} alt="" className="size-40 rounded-full object-cover" />
     </MiningRing>
@@ -63,6 +64,6 @@ function Home() {
     <div className="mt-5 w-full">
       {started === null || done ? <PrimaryButton onClick={act} disabled={busy}>{done ? `${t("claim")} +${fmt(mined, 4)} ORAI` : t("startMining")}</PrimaryButton> : <div className="rounded-2xl bg-accent py-4 text-primary">+{fmt(mined, 4)} ORAI</div>}
     </div>
-    <div className="mt-7 w-full border-t border-border pt-5 text-start"><PowerSection /></div>
+    <div className="mt-7 w-full border-t border-border pt-5 text-start"><GhostButton className="flex w-full items-center justify-between" aria-expanded={collectibles} onClick={()=>setCollectibles(v=>!v)}><span>Orange collectibles</span><span>{collectibles ? "−" : "+"}</span></GhostButton>{collectibles && <div className="mt-4"><PowerSection /></div>}</div>
   </div>;
 }

@@ -44,9 +44,6 @@ function Frame() {
   }
   return (
     <div className="safe-top mx-auto flex min-h-dvh max-w-md flex-col px-5 pb-28">
-      {demo && (
-        <div className="glass mb-3 rounded-2xl px-4 py-2 text-center text-xs text-muted-foreground">{t("openInTelegram")}</div>
-      )}
       <div key={pathname} className="page-motion"><Outlet /></div>
       <nav className="safe-bottom fixed inset-x-0 bottom-0 z-40 mx-auto max-w-md px-5">
         <div className="glass-strong flex items-center justify-between gap-1 rounded-full p-1.5">
