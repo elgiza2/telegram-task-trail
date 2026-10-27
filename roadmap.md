@@ -1,7 +1,7 @@
 # Roadmap
-- [ ] Opt-in rewarded ads and ad tasks; withdrawal requires 5 provider-verified ad views (provider/account needed; click condition only if provider permits incentivized clicks)
-- [ ] Redesign mining and compact animated glass navigation; monochrome controls, preserve artwork colors
-- [ ] Grant every existing and new user 2000 ORAI starter credit exactly once
+- [ ] Monetag opt-in rewarded ads and ad tasks; advise nonintrusive format and collect zone code; withdrawal requires 5 provider-verified ad views (click condition only if provider permits incentivized clicks)
+- [x] Redesign mining and compact animated glass navigation; monochrome controls, preserve artwork colors
+- [x] Configure 2000 ORAI starter credit exactly once (connected orai_tg_users is currently empty)
 - [x] Import project from GitHub
 - [x] Own tables (orai_ prefix) in the connected database, existing data untouched
 - [x] Tasks page tabs: Our tasks / Partners / Others; apps with image, tasks under each app
@@ -11,7 +11,8 @@
 - [ ] Securely configure a replacement payout wallet; exposed recovery phrase must be replaced before live payouts
 - [ ] In-app ORAI purchase via STON.fi with the connected wallet
 - [ ] Automatic NFT minting after purchase
-- [ ] Games: daily wheel, Crash, + suggested games
+- [x] Daily ORAI wheel and free rocket practice game
+- [ ] Real-stake Crash game: payout rules and independent secure settlement engine needed
 - [ ] New leveling: upgrades with TON / ORAI, points from tasks & invites, NFT boosts (replace hold-in-wallet)
 - [ ] Stronger referrals: milestone rewards, 2-level commission, weekly leaderboard
 - [ ] Real ORAI price feed (verify existing market snapshot)
