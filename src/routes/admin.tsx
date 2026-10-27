@@ -2,7 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import { useStore } from "@/lib/store";
-import { adminAddApp, adminAddTask, adminOverview, adminToggleTask, adminMintPending } from "@/lib/api.functions";
+import { adminAddApp, adminAddTask, adminOverview, adminToggleTask, adminMintPending, adminUpdateTask, adminDeleteTask } from "@/lib/api.functions";
 import { fmt, changeOwnerPayload } from "@/lib/ton";
 import { useTonConnectUI } from "@tonconnect/ui-react";
 import { NFT_COLLECTION_ADDRESS, PAYOUT_WALLET } from "@/lib/config";
@@ -57,6 +57,8 @@ export function AdminPage() {
   const [ov, setOv] = useState<Overview | null>(null);
   const [title, setTitle] = useState("");
   const [link, setLink] = useState("");
+  const [reward, setReward] = useState("50");
+  const [edit, setEdit] = useState<{ id: string; title: string; link: string; reward: string } | null>(null);
   const [appId, setAppId] = useState("");
   const [addingApp, setAddingApp] = useState(false);
   const [busy, setBusy] = useState(false);
@@ -88,7 +90,7 @@ export function AdminPage() {
     if (!title || !link || !appId) return;
     setBusy(true);
     try {
-      await adminAddTask({ data: { initData, title, link, appId } });
+      await adminAddTask({ data: { initData, title, link, appId, reward: Number(reward) } });
       setTitle(""); setLink("");
       await load();
       toast.success(t("done"));
@@ -100,6 +102,18 @@ export function AdminPage() {
       await adminToggleTask({ data: { initData, taskId, active } });
       await load();
     } catch (e: any) { toast.error(e.message); }
+  }
+
+  async function saveEdit() {
+    if (!edit) return;
+    setBusy(true);
+    try { await adminUpdateTask({ data: { initData, taskId: edit.id, title: edit.title, link: edit.link, reward: Number(edit.reward) } }); setEdit(null); await load(); toast.success("Saved"); }
+    catch (e: any) { toast.error(e.message); } finally { setBusy(false); }
+  }
+  async function remove(task: any) {
+    if (!confirm(`Delete "${task.title}"?`)) return;
+    try { await adminDeleteTask({ data: { initData, taskId: task.id } }); await load(); toast.success("Deleted"); }
+    catch (e: any) { toast.error(e.message); }
   }
 
   return (
@@ -149,6 +163,7 @@ export function AdminPage() {
           <h2 className="font-bold">{t("addTask")}</h2>
           <input aria-label={t("taskTitle")} value={title} onChange={e => setTitle(e.target.value)} placeholder={t("taskTitle")} className="h-12 w-full rounded-xl bg-card px-4" />
           <input aria-label={t("taskLink")} type="url" value={link} onChange={e => setLink(e.target.value)} placeholder={t("taskLink")} className="h-12 w-full rounded-xl bg-card px-4" />
+          <input aria-label="Reward ORAI" type="number" min={0} value={reward} onChange={e => setReward(e.target.value)} placeholder="Reward (ORAI)" className="h-12 w-full rounded-xl bg-card px-4" />
           <PrimaryButton onClick={addTask} disabled={busy || !title.trim() || !link}>{t("save")}</PrimaryButton>
         </div>}
       </section>
@@ -157,11 +172,18 @@ export function AdminPage() {
       <Card>
         <div className="mb-2 text-lg">{t("tasks")}</div>
         {(ov?.tasks ?? []).map((task: any) => (
-          <div key={task.id} className="flex items-center justify-between gap-2 border-t border-muted py-2 text-sm first:border-0">
-            <span className="flex-1">{task.title} · {fmt(task.reward)} ORAI</span>
-            <GhostButton className="h-9 px-3 text-xs" onClick={() => toggle(task.id, !task.active)}>
-              {task.active ? t("done") : t("pending")}
-            </GhostButton>
+          <div key={task.id} className="border-t border-muted py-2 text-sm first:border-0">
+            {edit?.id === task.id ? <div className="space-y-2">
+              <input aria-label="Task name" value={edit.title} onChange={e => setEdit({ ...edit, title: e.target.value })} className="h-11 w-full rounded-xl bg-background px-3" />
+              <input aria-label="Task link" value={edit.link} onChange={e => setEdit({ ...edit, link: e.target.value })} className="h-11 w-full rounded-xl bg-background px-3" />
+              <input aria-label="Reward ORAI" type="number" min={0} value={edit.reward} onChange={e => setEdit({ ...edit, reward: e.target.value })} className="h-11 w-full rounded-xl bg-background px-3" />
+              <div className="grid grid-cols-2 gap-2"><PrimaryButton disabled={busy} onClick={saveEdit}>Save</PrimaryButton><GhostButton onClick={() => setEdit(null)}>Cancel</GhostButton></div>
+            </div> : <div className="flex items-center gap-2">
+              <span className="min-w-0 flex-1 truncate">{task.app_name ? `${task.app_name} · ` : ""}{task.title} · {fmt(task.reward)} ORAI</span>
+              <GhostButton className="h-9 px-3 text-xs" onClick={() => toggle(task.id, !task.active)}>{task.active ? "Hide" : "Show"}</GhostButton>
+              <GhostButton className="h-9 px-3 text-xs" onClick={() => setEdit({ id: task.id, title: task.title, link: task.link, reward: String(task.reward) })}>Edit</GhostButton>
+              {!["story", "share"].includes(task.kind) && <GhostButton className="h-9 px-3 text-xs" onClick={() => remove(task)}>Delete</GhostButton>}
+            </div>}
           </div>
         ))}
       </Card>
