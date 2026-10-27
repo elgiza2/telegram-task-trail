@@ -69,8 +69,8 @@ function NftTab() {
       <GhostButton className="flex w-full items-center justify-between rounded-lg" onClick={() => openLink(NFT_COLLECTION_URL)}><span>Orange · Getgems</span><ArrowUpRight className="size-4" /></GhostButton>
       <div className="space-y-5">
         {NFT_TIERS.map((n) => (
-          <Card key={n.tier} className={`overflow-hidden rounded-3xl p-2 ${ownedTiers.includes(n.tier) ? "ring-2 ring-primary" : ""}`}>
-            <img src={NFT_IMAGES[n.tier - 1]} alt={n.name} loading="lazy" className="aspect-[4/1] w-full rounded-2xl object-cover" />
+          <Card key={n.tier} className={`overflow-hidden rounded-lg p-2 ${ownedTiers.includes(n.tier) ? "ring-2 ring-primary" : ""}`}>
+            <img src={NFT_IMAGES[n.tier - 1]} alt={n.name} loading="lazy" className="aspect-[3/1] w-full rounded-lg object-cover" />
             <div className="p-4">
               <div className="flex flex-wrap items-center justify-between gap-2"><h2 className="text-lg font-bold">{n.name}</h2><span className="flex items-center gap-1.5 text-sm font-bold" dir="ltr"><CoinIcon src={GRAM_ICON} className="size-4" />{n.price} GRAM</span></div>
               <p className="mt-1.5 text-sm text-muted-foreground">{NFT_DESCRIPTIONS[n.tier - 1]?.[ar ? 0 : 1]}</p>
@@ -95,7 +95,7 @@ export function PowerSection() {
   const { data, t, x, demo, initData, patchMe, lang } = useStore();
   const ar = lang === "ar";
   const [tab, setTab] = useState<"power" | "nft">("power");
-  const [visible, setVisible] = useState(20);
+  const [visible, setVisible] = useState(4);
   const [holdings, setHoldings] = useState<number | null>(null);
   const [price, setPrice] = useState(0);
 
@@ -132,21 +132,14 @@ export function PowerSection() {
       options={[{ key: "power", label: t("power") }, { key: "nft", label: "NFT" }]} />
 
     {tab === "nft" ? <NftTab /> : <>
-      <div className="rounded-3xl bg-primary p-5 text-primary-foreground">
-        <div className="flex items-center justify-between text-xs font-bold opacity-90"><span>{ar ? "المستوى" : "Level"} {lvl}</span><span>Staking</span></div>
-        <div className="mt-3 flex items-end justify-between gap-3" dir="ltr">
-          <div><div className="text-3xl font-bold tabular-nums">+${fmt(current.perDay, 2)}</div><div className="text-xs font-bold opacity-80">{t("perDay")}</div></div>
-          <div className="text-end"><div className="text-lg font-bold tabular-nums">{usd !== null ? `$${fmt(usd, 2)}` : `$${fmt(current.price, 2)}`}</div><div className="text-xs font-bold opacity-80">{ar ? "رصيدك" : "Holdings"}</div></div>
-        </div>
-        {next && <div className="mt-4"><div className="h-2 overflow-hidden rounded-full bg-primary-foreground/25"><div className="h-full rounded-full bg-primary-foreground transition-all" style={{ width: `${progress}%` }} /></div>
-          <div className="mt-1.5 text-xs font-bold opacity-80" dir="ltr">{ar ? "المستوى التالي" : "Next"} · ${fmt(next.price, 2)}</div></div>}
+      <div className="flex items-center justify-between border-b border-border pb-4">
+        <div><div className="text-xs text-muted-foreground">{ar ? "قوة التعدين" : "Mining power"}</div><div className="mt-1 text-xl">{t("level")} {lvl}</div></div>
+        <div className="text-end"><div className="text-xs text-muted-foreground">ORAI / {ar ? "يوم" : "day"}</div><div className="mt-1 text-xl tabular-nums">{fmt(Number(me.mining_rate_daily ?? 0.1), 4)}</div></div>
       </div>
-      <PrimaryButton className="mt-4" onClick={boost}>{ar ? "زيادة قوة التعدين" : "Boost mining power"}</PrimaryButton>
-
-      <div className="mt-6 grid grid-cols-2 gap-3">
+      <div className="mt-4 grid grid-cols-2 gap-3">
         {tiers.map((l) => {
           const active = l.level === lvl;
-          return <button key={l.level} onClick={active ? undefined : boost} className={`rounded-3xl p-4 text-start transition active:scale-[0.97] ${active ? "bg-primary text-primary-foreground" : "bg-card"}`}>
+          return <button key={l.level} onClick={active ? undefined : boost} className={`rounded-lg p-4 text-start transition active:scale-[0.97] ${active ? "bg-primary text-primary-foreground" : "bg-card"}`}>
             <div className={`text-xs font-bold ${active ? "opacity-80" : "text-muted-foreground"}`}>{ar ? "المستوى" : "Level"} {l.level}</div>
             <div className="mt-2 text-2xl font-bold tabular-nums" dir="ltr">${fmt(l.price, 2)}</div>
             <div className={`mt-3 rounded-xl px-2.5 py-1.5 text-center text-xs font-bold tabular-nums ${active ? "bg-primary-foreground/20" : "bg-accent text-primary"}`} dir="ltr">+${fmt(l.perDay, 2)} / {ar ? "يوم" : "day"}</div>
