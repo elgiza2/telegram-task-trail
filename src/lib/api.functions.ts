@@ -19,7 +19,7 @@ async function ctx(initData: string) {
 }
 
 async function loadUser(db: any, id: number) {
-  const { data, error } = await db.from("tg_users").select("*").eq("id", id).single();
+  const { data, error } = await db.from("orai_tg_users").select("*").eq("id", id).single();
   if (error) throw new Error(error.message);
   return data;
 }
@@ -28,7 +28,7 @@ export const bootstrap = createServerFn({ method: "POST" })
   .inputValidator(auth)
   .handler(async ({ data }) => {
     const { user, startParam, db } = await ctx(data.initData);
-    const { data: existing } = await db.from("tg_users").select("id").eq("id", user.id).maybeSingle();
+    const { data: existing } = await db.from("orai_tg_users").select("id").eq("id", user.id).maybeSingle();
     const profile = {
       id: user.id, username: user.username ?? null, first_name: user.first_name ?? null,
       photo_url: user.photo_url ?? null, language_code: user.language_code ?? null,
@@ -36,23 +36,23 @@ export const bootstrap = createServerFn({ method: "POST" })
     if (!existing) {
       const ref = startParam?.startsWith("ref_") ? Number(startParam.slice(4)) : null;
       const referred_by = ref && ref !== user.id ? ref : null;
-      await db.from("tg_users").insert({ ...profile, referred_by });
+      await db.from("orai_tg_users").insert({ ...profile, referred_by });
       if (referred_by) {
-        const { data: r } = await db.from("tg_users").select("balance").eq("id", referred_by).maybeSingle();
-        if (r) await db.from("tg_users").update({ balance: Number(r.balance) + REFERRAL_BONUS }).eq("id", referred_by);
+        const { data: r } = await db.from("orai_tg_users").select("balance").eq("id", referred_by).maybeSingle();
+        if (r) await db.from("orai_tg_users").update({ balance: Number(r.balance) + REFERRAL_BONUS }).eq("id", referred_by);
       }
     } else {
-      await db.from("tg_users").update(profile).eq("id", user.id);
+      await db.from("orai_tg_users").update(profile).eq("id", user.id);
     }
     const { reconcilePayouts } = await import("./payout-queue.server");
     await reconcilePayouts(db, user.id);
     await syncPower(db, user.id);
     const [me, tasks, done, refs, wd] = await Promise.all([
       loadUser(db, user.id),
-      db.from("tasks").select("*").eq("active", true).order("sort"),
-      db.from("task_completions").select("task_id").eq("user_id", user.id),
-      db.from("tg_users").select("id, first_name, username").eq("referred_by", user.id).limit(100),
-      db.from("withdrawals").select("*").eq("user_id", user.id).order("created_at", { ascending: false }).limit(20),
+      db.from("orai_tasks").select("*").eq("active", true).order("sort"),
+      db.from("orai_task_completions").select("task_id").eq("user_id", user.id),
+      db.from("orai_tg_users").select("id, first_name, username").eq("referred_by", user.id).limit(100),
+      db.from("orai_withdrawals").select("*").eq("user_id", user.id).order("created_at", { ascending: false }).limit(20),
     ]);
     return {
       me,
@@ -72,7 +72,7 @@ export const startMining = createServerFn({ method: "POST" })
     if (me.mining_started_at) throw new Error("Already mining");
     const synced = await syncPower(db, user.id);
     const now = new Date().toISOString();
-    await db.from("tg_users").update({ mining_started_at: now, mining_settled_at: now, mining_pending: 0 }).eq("id", user.id);
+    await db.from("orai_tg_users").update({ mining_started_at: now, mining_settled_at: now, mining_pending: 0 }).eq("id", user.id);
     return { mining_started_at: now, mining_settled_at: now, mining_pending: 0, mining_rate_daily: synced.mining_rate_daily };
   });
 
@@ -92,7 +92,7 @@ export const completeTask = createServerFn({ method: "POST" })
   .inputValidator((i: Auth & { taskId: string }) => ({ ...auth(i), taskId: String(i.taskId) }))
   .handler(async ({ data }) => {
     const { user, db } = await ctx(data.initData);
-    const { data: task } = await db.from("tasks").select("*").eq("id", data.taskId).single();
+    const { data: task } = await db.from("orai_tasks").select("*").eq("id", data.taskId).single();
     if (!task) throw new Error("Task not found");
     // Real verification per task kind.
     const token = process.env["TELEGRAM_BOT_TOKEN"];
@@ -112,12 +112,12 @@ export const completeTask = createServerFn({ method: "POST" })
       const held = await oraiHoldings(meNow.wallet_address).catch(() => 0);
       if (!(held > 0)) throw new Error("TASK_NOT_VERIFIED");
     }
-    const { error } = await db.from("task_completions").insert({ user_id: user.id, task_id: task.id });
+    const { error } = await db.from("orai_task_completions").insert({ user_id: user.id, task_id: task.id });
     if (error) throw new Error("Already completed");
     const me = await loadUser(db, user.id);
-    const { data: owned } = await db.from("nfts").select("tier").eq("user_id", user.id);
+    const { data: owned } = await db.from("orai_nfts").select("tier").eq("user_id", user.id);
     const balance = Number(me.balance) + Number(task.reward) * nftBenefits((owned ?? []).map((n: any) => n.tier)).tasks;
-    await db.from("tg_users").update({ balance }).eq("id", user.id);
+    await db.from("orai_tg_users").update({ balance }).eq("id", user.id);
     const synced = await syncPower(db, user.id);
     return { balance, power_level: synced.power_level };
   });
@@ -142,7 +142,7 @@ export const setWallet = createServerFn({ method: "POST" })
   .inputValidator((i: Auth & { address: string | null }) => ({ ...auth(i), address: i.address ? String(i.address).slice(0, 80) : null }))
   .handler(async ({ data }) => {
     const { user, db } = await ctx(data.initData);
-    await db.from("tg_users").update({ wallet_address: data.address, wallet_verified: false }).eq("id", user.id);
+    await db.from("orai_tg_users").update({ wallet_address: data.address, wallet_verified: false }).eq("id", user.id);
     return { ok: true };
   });
 
@@ -179,11 +179,11 @@ export const requestWithdraw = createServerFn({ method: "POST" })
     const me = await loadUser(db, user.id);
     if (!me.wallet_address || !me.wallet_verified) throw new Error("Verify wallet ownership first");
     if (Number(me.balance) < data.amount) throw new Error("Not enough ORAI");
-    const { data: pending } = await db.from("withdrawals").select("id").eq("user_id", user.id).in("status", ["pending", "submitted"]).limit(1);
+    const { data: pending } = await db.from("orai_withdrawals").select("id").eq("user_id", user.id).in("status", ["pending", "submitted"]).limit(1);
     if (pending?.length) throw new Error("Your earlier withdrawal is still being confirmed");
     const { payoutPreflight } = await import("./payout.server");
     await payoutPreflight(data.amount, true);
-    const { data: previous } = await db.from("withdrawals").select("fee_tx").eq("user_id", user.id);
+    const { data: previous } = await db.from("orai_withdrawals").select("fee_tx").eq("user_id", user.id);
     const used = new Set((previous ?? []).map((row: any) => row.fee_tx));
     const tx = await findPayment(`fee:${user.id}`, WITHDRAW_FEE_GRAM * 1e9, 8, used, PAYOUT_WALLET);
     if (!tx) throw new Error("Fee payment not found yet. Wait a minute before retrying; do not pay twice.");
@@ -192,7 +192,7 @@ export const requestWithdraw = createServerFn({ method: "POST" })
     const { processPayouts } = await import("./payout-queue.server");
     await processPayouts(db).catch((e: unknown) => console.error("Payout deferred", e));
     await syncPower(db, user.id).catch((e: unknown) => console.error("Power sync deferred", e));
-    const { data: saved } = await db.from("withdrawals").select("status").eq("id", withdrawalId).single();
+    const { data: saved } = await db.from("orai_withdrawals").select("status").eq("id", withdrawalId).single();
     return { id: withdrawalId, balance: (await loadUser(db, user.id)).balance, status: saved?.status ?? "pending" };
 
   });
@@ -223,9 +223,9 @@ async function syncPower(db: any, id: number) {
   const holdings = Number(me.balance) + external + gramAsOrai;
   const level = levelForHoldings(holdings, market.orai.priceUsd);
   const pro = me.subscribed_until && new Date(me.subscribed_until).getTime() > Date.now();
-  const { data: owned } = await db.from("nfts").select("tier").eq("user_id", id);
+  const { data: owned } = await db.from("orai_nfts").select("tier").eq("user_id", id);
   const perks = nftBenefits((owned ?? []).map((n: any) => n.tier));
-  await db.from("tg_users").update({ referral_rate: perks.referralRate }).eq("id", id);
+  await db.from("orai_tg_users").update({ referral_rate: perks.referralRate }).eq("id", id);
   const rate = dailyOrai(level, market.orai.priceUsd) * (pro ? 2 : 1) * perks.mining;
   const { error } = await db.rpc("orange_sync_power", { p_user_id: id, p_level: level, p_rate: rate });
   if (error) throw new Error(error.message);
@@ -274,7 +274,7 @@ export const verifySubscription = createServerFn({ method: "POST" })
     // only credit a payment made after the current period was purchased
     if (me.subscribed_until && txTime < new Date(me.subscribed_until).getTime() - 30 * 86400_000) throw new Error("Payment already used");
     const until = new Date(base + 30 * 86400_000).toISOString();
-    await db.from("tg_users").update({ subscribed_until: until }).eq("id", user.id);
+    await db.from("orai_tg_users").update({ subscribed_until: until }).eq("id", user.id);
     return { subscribed_until: until };
   });
 
@@ -291,15 +291,15 @@ export const adminOverview = createServerFn({ method: "POST" })
   .handler(async ({ data }) => {
     const { db } = await adminCtx(data.initData);
     const [users, withdrawals, tasks, nfts, apps] = await Promise.all([
-      db.from("tg_users").select("id", { count: "exact", head: true }),
-      db.from("withdrawals").select("*").order("created_at", { ascending: false }).limit(50),
-      db.from("tasks").select("*").order("sort"),
-      db.from("nfts").select("id", { count: "exact", head: true }),
-      db.from("task_apps").select("*").order("created_at"),
+      db.from("orai_tg_users").select("id", { count: "exact", head: true }),
+      db.from("orai_withdrawals").select("*").order("created_at", { ascending: false }).limit(50),
+      db.from("orai_tasks").select("*").order("sort"),
+      db.from("orai_nfts").select("id", { count: "exact", head: true }),
+      db.from("orai_task_apps").select("*").order("created_at"),
     ]);
     let totalBalance = 0;
     for (let from = 0; ; from += 1000) {
-      const { data: page } = await db.from("tg_users").select("balance").order("id").range(from, from + 999);
+      const { data: page } = await db.from("orai_tg_users").select("balance").order("id").range(from, from + 999);
       for (const u of page ?? []) totalBalance += Number(u.balance);
       if (!page || page.length < 1000) break;
     }
@@ -321,7 +321,7 @@ export const adminAddApp = createServerFn({ method: "POST" })
     return { ...auth(i), name, image };
   }).handler(async ({ data }) => {
     const { db } = await adminCtx(data.initData);
-    const { error } = await db.from("task_apps").insert({ name: data.name, image: data.image });
+    const { error } = await db.from("orai_task_apps").insert({ name: data.name, image: data.image });
     if (error) throw new Error(error.message);
     return { ok: true };
   });
@@ -334,13 +334,13 @@ export const adminAddTask = createServerFn({ method: "POST" })
     return { ...auth(i), title, link, appId: String(i.appId) };
   }).handler(async ({ data }) => {
     const { db } = await adminCtx(data.initData);
-    const { data: app, error: appError } = await db.from("task_apps").select("*").eq("id", data.appId).single();
+    const { data: app, error: appError } = await db.from("orai_task_apps").select("*").eq("id", data.appId).single();
     if (appError || !app) throw new Error("Select an application first");
     const priv = data.link.match(/t\.me\/c\/(\d+)/);
     const kind = /ston\.fi/i.test(data.link) ? "ston" : priv ? "channel" : "link";
     const { translateTitle } = await import("./translate.server");
     const title_i18n = await translateTitle(data.title);
-    const { error } = await db.from("tasks").insert({ title: data.title, link: data.link, reward: 0, kind, chat_id: priv ? `-100${priv[1]}` : null, title_i18n,
+    const { error } = await db.from("orai_tasks").insert({ title: data.title, link: data.link, reward: 0, kind, chat_id: priv ? `-100${priv[1]}` : null, title_i18n,
       app_id: app.id, app_name: app.name, app_image: app.image, image_url: app.image });
     if (error) throw new Error(error.message);
     return { ok: true };
@@ -350,7 +350,7 @@ export const adminToggleTask = createServerFn({ method: "POST" })
   .inputValidator((i: Auth & { taskId: string; active: boolean }) => ({ ...auth(i), taskId: String(i.taskId), active: !!i.active }))
   .handler(async ({ data }) => {
     const { db } = await adminCtx(data.initData);
-    const { error } = await db.from("tasks").update({ active: data.active }).eq("id", data.taskId);
+    const { error } = await db.from("orai_tasks").update({ active: data.active }).eq("id", data.taskId);
     if (error) throw new Error(error.message);
     return { ok: true };
   });
@@ -366,19 +366,19 @@ export const buyNft = createServerFn({ method: "POST" })
     const { user, db } = await ctx(data.initData);
     const me = await loadUser(db, user.id);
     if (!me.wallet_address) throw new Error("Connect your wallet first");
-    const { data: usedRows } = await db.from("nfts").select("tx_hash");
+    const { data: usedRows } = await db.from("orai_nfts").select("tx_hash");
     const usedSet = new Set((usedRows ?? []).map((r: any) => r.tx_hash).filter(Boolean));
     const tx = await findPayment(`nft:${user.id}:${tier.tier}`, Math.round(tier.price * 1e9), 8, usedSet);
     if (!tx) throw new Error("Payment not found yet, try again in a minute");
-    const { count } = await db.from("nfts").select("id", { count: "exact", head: true });
+    const { count } = await db.from("orai_nfts").select("id", { count: "exact", head: true });
     const itemIndex = count ?? 0;
-    const { error } = await db.from("nfts").insert({ user_id: user.id, item_index: itemIndex, price_gram: tier.price, tx_hash: tx.hash, tier: tier.tier, mint_status: "pending" });
+    const { error } = await db.from("orai_nfts").insert({ user_id: user.id, item_index: itemIndex, price_gram: tier.price, tx_hash: tx.hash, tier: tier.tier, mint_status: "pending" });
     if (error) throw new Error("This payment was already used");
     await syncPower(db, user.id);
     try {
       const { getgemsMint } = await import("./getgems.server");
       await getgemsMint(`nft-${tx.hash}`.slice(0, 100), me.wallet_address, tier.tier);
-      await db.from("nfts").update({ mint_status: "submitted" }).eq("tx_hash", tx.hash);
+      await db.from("orai_nfts").update({ mint_status: "submitted" }).eq("tx_hash", tx.hash);
     } catch (e) { console.error("NFT mint deferred:", e); }
     return { itemIndex, tier: tier.tier };
   });
@@ -387,14 +387,14 @@ export const myNfts = createServerFn({ method: "POST" })
   .inputValidator(auth)
   .handler(async ({ data }) => {
     const { user, db } = await ctx(data.initData);
-    const { data: rows } = await db.from("nfts").select("*").eq("user_id", user.id).order("created_at", { ascending: false });
+    const { data: rows } = await db.from("orai_nfts").select("*").eq("user_id", user.id).order("created_at", { ascending: false });
     return { nfts: rows ?? [], collection: NFT_COLLECTION_ADDRESS, price: NFT_PRICE_GRAM };
   });
 
 export const walletChallenge = createServerFn({ method: "POST" }).inputValidator(auth).handler(async ({ data }) => {
   const { user, db } = await ctx(data.initData);
   const nonce = `${Date.now()}:${crypto.randomUUID()}`;
-  const { error } = await db.from("tg_users").update({ wallet_nonce: nonce }).eq("id", user.id);
+  const { error } = await db.from("orai_tg_users").update({ wallet_nonce: nonce }).eq("id", user.id);
   if (error) throw new Error(error.message);
   return { nonce };
 });
@@ -405,9 +405,9 @@ export const proveWallet = createServerFn({ method: "POST" }).inputValidator((i:
   const { getRequest } = await import("@tanstack/react-start/server");
   const { verifyWalletProof } = await import("./wallet-proof.server");
   const address = await verifyWalletProof(data.address, data.proof, me.wallet_nonce, [new URL(getRequest().url).host, "orangeorai.vercel.app", "botkey-telegram-bridge.lovable.app"]);
-  const { data: other } = await db.from("tg_users").select("id").eq("wallet_address", address).eq("wallet_verified", true).neq("id", user.id).limit(1);
+  const { data: other } = await db.from("orai_tg_users").select("id").eq("wallet_address", address).eq("wallet_verified", true).neq("id", user.id).limit(1);
   if (other?.length) throw new Error("Wallet already linked to another account");
-  const { error } = await db.from("tg_users").update({ wallet_address: address, wallet_verified: true, wallet_nonce: null }).eq("id", user.id).eq("wallet_nonce", me.wallet_nonce).select("id").single();
+  const { error } = await db.from("orai_tg_users").update({ wallet_address: address, wallet_verified: true, wallet_nonce: null }).eq("id", user.id).eq("wallet_nonce", me.wallet_nonce).select("id").single();
   if (error) throw new Error(error.message);
   return syncPower(db, user.id);
 });
@@ -418,10 +418,10 @@ export const checkWithdrawal = createServerFn({ method: "POST" }).inputValidator
   if (!Number.isFinite(data.amount) || data.amount < MIN_WITHDRAW || data.amount > Number(me.balance)) throw new Error("Not enough ORAI or below minimum withdrawal");
   const { payoutPreflight } = await import("./payout.server");
   if (!me.wallet_address || !me.wallet_verified) throw new Error("Verify wallet ownership first");
-  const { data: pending } = await db.from("withdrawals").select("id").eq("user_id", user.id).in("status", ["pending", "submitted"]).limit(1);
+  const { data: pending } = await db.from("orai_withdrawals").select("id").eq("user_id", user.id).in("status", ["pending", "submitted"]).limit(1);
   if (pending?.length) throw new Error("Your earlier withdrawal is still being confirmed");
   await payoutPreflight(data.amount, false);
-  const { data: previous } = await db.from("withdrawals").select("fee_tx").eq("user_id", user.id);
+  const { data: previous } = await db.from("orai_withdrawals").select("fee_tx").eq("user_id", user.id);
   const used = new Set((previous ?? []).map((row: any) => row.fee_tx));
   const fee = await findPayment(`fee:${user.id}`, WITHDRAW_FEE_GRAM * 1e9, 1, used, PAYOUT_WALLET);
   return { ok: true, feePaid: !!fee };
@@ -432,14 +432,14 @@ export const adminMintPending = createServerFn({ method: "POST" })
   .inputValidator((i: Auth) => auth(i))
   .handler(async ({ data }) => {
     const { db } = await adminCtx(data.initData);
-    const { data: rows } = await db.from("nfts").select("id,item_index,user_id,tier,tx_hash").eq("mint_status", "pending").order("item_index");
+    const { data: rows } = await db.from("orai_nfts").select("id,item_index,user_id,tier,tx_hash").eq("mint_status", "pending").order("item_index");
     const { getgemsMint } = await import("./getgems.server");
     let minted = 0;
     for (const n of rows ?? []) {
-      const { data: u } = await db.from("tg_users").select("wallet_address").eq("id", n.user_id).single();
+      const { data: u } = await db.from("orai_tg_users").select("wallet_address").eq("id", n.user_id).single();
       if (!u?.wallet_address) continue;
       await getgemsMint(`nft-${n.tx_hash ?? n.id}`.slice(0, 100), u.wallet_address, n.tier ?? 1);
-      await db.from("nfts").update({ mint_status: "submitted" }).eq("id", n.id);
+      await db.from("orai_nfts").update({ mint_status: "submitted" }).eq("id", n.id);
       minted++;
     }
     return { minted, pending: (rows?.length ?? 0) - minted };

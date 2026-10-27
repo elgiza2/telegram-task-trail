@@ -51,13 +51,13 @@ export const Route = createFileRoute("/api/public/telegram/webhook")({
         if (param?.startsWith("ref_") && msg.from?.id) {
           const ref = Number(param.slice(4));
           const { supabaseAdmin: db } = await import("@/integrations/supabase/client.server");
-          const { data: exists } = await db.from("tg_users").select("id").eq("id", msg.from.id).maybeSingle();
+          const { data: exists } = await db.from("orai_tg_users").select("id").eq("id", msg.from.id).maybeSingle();
           if (!exists && ref && ref !== msg.from.id) {
-            const { data: r } = await db.from("tg_users").select("balance").eq("id", ref).maybeSingle();
+            const { data: r } = await db.from("orai_tg_users").select("balance").eq("id", ref).maybeSingle();
             if (r) {
               const { REFERRAL_BONUS } = await import("@/lib/config");
-              await db.from("tg_users").insert({ id: msg.from.id, first_name: msg.from.first_name ?? null, username: msg.from.username ?? null, language_code: msg.from.language_code ?? null, referred_by: ref });
-              await db.from("tg_users").update({ balance: Number(r.balance) + REFERRAL_BONUS }).eq("id", ref);
+              await db.from("orai_tg_users").insert({ id: msg.from.id, first_name: msg.from.first_name ?? null, username: msg.from.username ?? null, language_code: msg.from.language_code ?? null, referred_by: ref });
+              await db.from("orai_tg_users").update({ balance: Number(r.balance) + REFERRAL_BONUS }).eq("id", ref);
               referralHandled = true;
             }
           }
@@ -65,8 +65,8 @@ export const Route = createFileRoute("/api/public/telegram/webhook")({
         if (!referralHandled && msg.from?.id) {
           // Save every /start user, even if they never open the app.
           const { supabaseAdmin: db } = await import("@/integrations/supabase/client.server");
-          const { data: exists } = await db.from("tg_users").select("id").eq("id", msg.from.id).maybeSingle();
-          if (!exists) await db.from("tg_users").insert({ id: msg.from.id, first_name: msg.from.first_name ?? null, username: msg.from.username ?? null, language_code: msg.from.language_code ?? null });
+          const { data: exists } = await db.from("orai_tg_users").select("id").eq("id", msg.from.id).maybeSingle();
+          if (!exists) await db.from("orai_tg_users").insert({ id: msg.from.id, first_name: msg.from.first_name ?? null, username: msg.from.username ?? null, language_code: msg.from.language_code ?? null });
         }
         const photo = `${PUBLIC_APP_URL}/start-banner.jpg?v=${BANNER_VERSION}`;
 

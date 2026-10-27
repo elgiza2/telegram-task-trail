@@ -3,7 +3,7 @@ import { ORAI_JETTON, PAYOUT_WALLET } from "./config";
 import { broadcastOrai, payoutPreflight, prepareOrai } from "./payout.server";
 
 export async function reconcilePayouts(db: any, userId?: number) {
-  let query = db.from("withdrawals").select("*").in("status", ["pending", "submitted"]).order("created_at").limit(100);
+  let query = db.from("orai_withdrawals").select("*").in("status", ["pending", "submitted"]).order("created_at").limit(100);
   if (userId !== undefined) query = query.eq("user_id", userId);
   const { data: rows, error } = await query;
   if (error) throw new Error(error.message);
@@ -23,7 +23,7 @@ export async function reconcilePayouts(db: any, userId?: number) {
     });
     // Unknown or aborted transfers require manual trace review, never an automatic refund/resend.
     if (!transfer || transfer.transaction_aborted !== false || !transfer.transaction_hash) continue;
-    const { error: updateError } = await db.from("withdrawals").update({ status: "sent", broadcast_error: null }).eq("id", row.id).in("status", ["pending", "submitted"]);
+    const { error: updateError } = await db.from("orai_withdrawals").update({ status: "sent", broadcast_error: null }).eq("id", row.id).in("status", ["pending", "submitted"]);
     if (updateError) throw new Error(updateError.message);
   }
 }
@@ -37,25 +37,25 @@ export async function processPayouts(db: any) {
     await reconcilePayouts(db);
     // One signed message at a time across the shared wallet. Existing ambiguous legacy
     // requests are deliberately not re-signed without on-chain evidence.
-    const { data: active } = await db.from("withdrawals").select("id").eq("status", "submitted").limit(1);
+    const { data: active } = await db.from("orai_withdrawals").select("id").eq("status", "submitted").limit(1);
     if (active?.length) return { waiting: true };
-    const { data: rows } = await db.from("withdrawals").select("*").eq("status", "pending").is("tx_hash", null).order("created_at").limit(1);
+    const { data: rows } = await db.from("orai_withdrawals").select("*").eq("status", "pending").is("tx_hash", null).order("created_at").limit(1);
     const row = rows?.[0];
     if (!row) return { idle: true };
     try {
       await payoutPreflight(Number(row.amount), true);
       const queryId = BigInt(`0x${row.id.replaceAll("-", "").slice(0, 15)}`).toString();
       const prepared = await prepareOrai(row.to_address, Number(row.amount), queryId);
-      const { error: savedError } = await db.from("withdrawals").update({ tx_hash: queryId, broadcast_boc: prepared.boc, broadcast_seqno: prepared.seqno, status: "submitted" }).eq("id", row.id).is("tx_hash", null);
+      const { error: savedError } = await db.from("orai_withdrawals").update({ tx_hash: queryId, broadcast_boc: prepared.boc, broadcast_seqno: prepared.seqno, status: "submitted" }).eq("id", row.id).is("tx_hash", null);
       if (savedError) throw new Error(savedError.message);
       await broadcastOrai(prepared.boc);
       return { submitted: row.id };
     } catch (e) {
       const reason = e instanceof Error ? e.message : "Payout unavailable";
-      await db.from("withdrawals").update({ broadcast_error: reason }).eq("id", row.id);
+      await db.from("orai_withdrawals").update({ broadcast_error: reason }).eq("id", row.id);
       throw e;
     }
   } finally {
-    await db.from("payout_lock").update({ expires_at: null }).eq("id", 1).eq("token", token);
+    await db.from("orai_payout_lock").update({ expires_at: null }).eq("id", 1).eq("token", token);
   }
 }

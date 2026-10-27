@@ -48,7 +48,7 @@ export const Route = createFileRoute("/api/public/jobs/bot")({ server: { handler
   }
 
   const { supabaseAdmin: db } = await import("@/integrations/supabase/client.server");
-  const { data: users } = await db.from("tg_users").select("id,language_code").order("created_at", { ascending: false }).limit(2000);
+  const { data: users } = await db.from("orai_tg_users").select("id,language_code").order("created_at", { ascending: false }).limit(2000);
   let sent = 0;
   const list = users ?? [];
   for (let i = 0; i < list.length; i += 25) {
