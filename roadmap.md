@@ -2,3 +2,11 @@
 - [x] Import project from GitHub
 - [x] Own tables (orai_ prefix) in the connected database, existing data untouched
 - [x] Tasks page tabs: Our tasks / Partners / Others; apps with image, tasks under each app
+- [x] Hide profile tab; merge power + NFT into mining page; separate referrals page
+- [ ] Save connected wallet to database for automatic withdrawals
+- [ ] In-app ORAI purchase via STON.fi with the connected wallet
+- [ ] Automatic NFT minting after purchase
+- [ ] Games: daily wheel, Crash, + suggested games
+- [ ] New leveling: upgrades with TON / ORAI, points from tasks & invites, NFT boosts (replace hold-in-wallet)
+- [ ] Stronger referrals: milestone rewards, 2-level commission, weekly leaderboard
+- [ ] Real ORAI price feed (verify existing market snapshot)
