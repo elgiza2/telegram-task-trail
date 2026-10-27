@@ -32,6 +32,8 @@ function BackButtonSync() {
 function Frame() {
   const { data, error, t, x, demo } = useStore();
   const { pathname } = useLocation();
+  const router = useRouter();
+  useEffect(() => { if (data) tabs.forEach(tab => { router.preloadRoute({ to: tab.to }).catch(() => {}); }); }, [!!data, router]);
   if (error) {
     return <div className="flex min-h-dvh items-center justify-center p-8 text-center text-muted-foreground">{error}</div>;
   }
@@ -50,7 +52,7 @@ function Frame() {
           {tabs.map(({ to, icon: Icon, key }) => {
             const active = pathname === to;
             return (
-              <Link key={to} to={to}
+              <Link key={to} to={to} preload="render"
                 aria-label={key === "games" ? "Games" : t(key)} aria-current={active ? "page" : undefined} data-active={active}
                 className={`nav-item flex h-11 min-w-0 items-center justify-center gap-2 rounded-full transition ${active ? "bg-primary text-primary-foreground shadow-sm" : "text-muted-foreground"}`}>
                 <Icon className="size-5 shrink-0" strokeWidth={2.2} />
