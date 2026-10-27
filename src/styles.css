@@ -75,11 +75,11 @@
   --border: oklch(0.85 0 0 / 0.6);
   --input: oklch(0.9 0 0);
   --ring: var(--primary);
-  --glass: oklch(1 0 0 / 0.5);
-  --glass-strong: oklch(1 0 0 / 0.7);
+  --glass: oklch(1 0 0 / 0.36);
+  --glass-strong: oklch(1 0 0 / 0.56);
   --glass-edge: oklch(1 0 0 / 0.92);
   --gradient-orange: linear-gradient(140deg, var(--primary), var(--secondary));
-  --shadow-glass: 0 1px 0 var(--glass-edge) inset, 0 8px 28px oklch(0 0 0 / 0.09);
+  --shadow-glass: 0 1px 0 var(--glass-edge) inset, 0 -1px 0 oklch(1 0 0 / 0.3) inset, 0 6px 22px oklch(0 0 0 / 0.07);
   --shadow-orange: 0 4px 12px oklch(0 0 0 / 0.12);
 }
 .nav-item { flex: 0 0 44px; transition: flex-basis 360ms ease, background 300ms ease; }
