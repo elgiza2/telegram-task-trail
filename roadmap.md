@@ -1,4 +1,5 @@
 # Roadmap
+- [ ] Deploy tested Vercel reverse-proxy front door without replacing the existing live deployment prematurely; verify destination and traffic
 - [ ] Make all site UI and bot Start message English-only (chat remains Arabic)
 - [ ] Redesign colored spin wheel, game artwork using uploaded characters, organized referrals with images, repair app icon
 - [ ] Configure provided bot credential securely; image + bold /start, restrained premium emoji and buttons
