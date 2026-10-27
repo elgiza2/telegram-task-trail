@@ -4,7 +4,7 @@
 - [x] Tasks page tabs: Our tasks / Partners / Others; apps with image, tasks under each app
 - [x] Hide profile tab; merge power + NFT into mining page; separate referrals page
 - [ ] Save connected wallet to database for automatic withdrawals
-- [ ] Charge withdrawal fees in ORAI from app balance; use the project's payout wallet
+- [x] Charge withdrawal fees in ORAI from app balance; use the project's payout wallet (live payout verification waits for replacement wallet credentials)
 - [ ] Securely configure a replacement payout wallet; exposed recovery phrase must be replaced before live payouts
 - [ ] In-app ORAI purchase via STON.fi with the connected wallet
 - [ ] Automatic NFT minting after purchase
