@@ -53,3 +53,6 @@
 - [x] Publish + Start webhook + Vercel
 - [ ] Full redesign of all games (gameplay)
 - [ ] Fix daily bot notifications quality
+- [x] Admin edit/delete tasks with ORAI reward; tasks show ORAI + tickets; Go buttons; arrow toggle on apps
+- [x] Referral goals moved to Tasks > Others; story/share tasks under Orange app with rewards; removed channel and STON tasks
+- [x] Games use Telegram back button only
