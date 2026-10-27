@@ -35,3 +35,4 @@
 - Vercel deploys only a full reverse proxy after validating the upstream; no static frontend snapshot or privileged credentials are exported. Why: keep frontend and server functions on one deployment version.
 - Ad SDK loads only after consent; only authenticated Monetag postbacks confirm unique server-issued impressions and withdrawals consume confirmed events atomically. Why: browser callbacks cannot prove ad views.
 - Referral stages are awarded by user-row triggers with persisted one-time flags, and mining progress counts completed session resets. Why: avoid duplicate credits and reward actual activity.
+- Task presentation uses the shared pendingTasks selector against persisted completion IDs. Why: completed tasks stay hidden consistently in application groups and share actions.

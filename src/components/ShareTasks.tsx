@@ -6,6 +6,7 @@ import { useStore } from "@/lib/store";
 import { getWebApp } from "@/lib/telegram";
 import { prepareShareMessage } from "@/lib/share.functions";
 import { TaskRow } from "@/components/TaskRow";
+import { pendingTasks } from "@/lib/task-visibility";
 
 const APP = "https://orangeorai.vercel.app";
 
@@ -15,7 +16,7 @@ export function ShareTasks({ onClaim }: { onClaim: (task: any) => Promise<void> 
   if (!data) return null;
   const link = `https://t.me/sramaibot?start=ref_${data.me.id}`;
   const wa = getWebApp();
-  const find = (kind: string) => data.tasks.find((t: any) => t.kind === kind && !data.done.includes(t.id));
+  const find = (kind: string) => pendingTasks(data.tasks, data.done).find((t: any) => t.kind === kind);
   const storyTask = find("story"), shareTask = find("share");
 
   function story() {
