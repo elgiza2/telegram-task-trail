@@ -13,7 +13,7 @@ ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 STAGE = "/tmp/vstatic"
 PROJECT = "orange-telegram"
 DOMAIN = "orangeorai.vercel.app"
-UPSTREAM = "https://botkey-telegram-bridge.lovable.app"
+UPSTREAM = "https://telegram-task-trail.lovable.app"
 API = "https://api.vercel.com"
 
 def sh(cmd):
