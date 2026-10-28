@@ -14,7 +14,10 @@ export const BUY_MESSAGES: Record<string, [string, string]> = {
   ko: ["Orange와 함께 ORAI를 알아보세요. STON.fi에서 ORAI를 구매하고 인증된 지갑에 보유하여 채굴 능력을 높이세요. 가격과 수수료를 확인하세요. 암호화폐 가격은 변동하며 수익은 보장되지 않습니다.", "앱 열기"],
 };
 
-export const CAMPAIGN_BATCH = 60;
+// Telegram allows roughly 30 messages/second per bot. The campaign worker
+// spaces these sends by 40ms, so 500 recipients stay below that limit while
+// keeping the background campaign efficient.
+export const CAMPAIGN_BATCH = 500;
 export function campaignPageAfter(cursor: number, maximum: number, ids: number[]) {
   return ids.filter(id => id > cursor && id <= maximum).sort((a, b) => a - b).slice(0, CAMPAIGN_BATCH);
 }

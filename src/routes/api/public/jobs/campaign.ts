@@ -3,19 +3,24 @@ import { authenticateCronRequest } from "@/integrations/supabase/cron-auth";
 import { CAMPAIGN_BATCH } from "@/lib/bot-messages";
 import { pickLang } from "@/lib/i18n";
 
-export const Route = createFileRoute("/api/public/jobs/campaign")({ server: { handlers: {
-  POST: async ({ request }) => {
+async function run(request: Request) {
     const failure = await authenticateCronRequest(request);
     if (failure) return failure;
     const { telegramApi, APP_URL } = await import("@/lib/telegram-api.server");
-    const body = await request.json().catch(() => null);
-    if (!body || typeof body.campaignId !== "string") return new Response("Invalid campaign", { status: 400 });
     const { supabaseAdmin: db } = await import("@/integrations/supabase/client.server");
+    const body = request.method === "POST" ? await request.json().catch(() => null) : null;
+    let campaignId = body && typeof body.campaignId === "string" ? body.campaignId : null;
+    if (!campaignId) {
+      const { data: queued, error: queueError } = await db.from("orai_bot_campaigns").select("id").eq("status", "queued").order("created_at", { ascending: true }).limit(1).maybeSingle();
+      if (queueError) return Response.json({ ok: false }, { status: 503 });
+      if (!queued) return Response.json({ idle: true });
+      campaignId = queued.id;
+    }
     const lease = crypto.randomUUID();
-    const { data: locked, error } = await db.rpc("orange_campaign_lock", { p_id: body.campaignId, p_token: lease });
+    const { data: locked, error } = await db.rpc("orange_campaign_lock", { p_id: campaignId, p_token: lease });
     if (error) return Response.json({ ok: false }, { status: 503 });
     if (!locked) return Response.json({ idle: true });
-    const { data: campaign } = await db.from("orai_bot_campaigns").select("*").eq("id", body.campaignId).single();
+    const { data: campaign } = await db.from("orai_bot_campaigns").select("*").eq("id", campaignId).single();
     if (!campaign) return Response.json({ ok: false }, { status: 404 });
     const { data: users, error: readError } = await db.from("orai_tg_users").select("id,language_code").gt("id", campaign.last_user_id).lte("id", campaign.max_user_id).order("id").limit(CAMPAIGN_BATCH);
     if (readError) return Response.json({ ok: false }, { status: 503 });
@@ -47,5 +52,9 @@ export const Route = createFileRoute("/api/public/jobs/campaign")({ server: { ha
     const completed = (users?.length ?? 0) < CAMPAIGN_BATCH && cursor === users?.at(-1)?.id || users?.length === 0;
     await db.from("orai_bot_campaigns").update({ status: completed ? "completed" : "queued", lease_until: null }).eq("id", campaign.id).eq("lease_token", lease);
     return Response.json({ sent, failed, completed });
-  },
+}
+
+export const Route = createFileRoute("/api/public/jobs/campaign")({ server: { handlers: {
+  GET: async ({ request }) => run(request),
+  POST: async ({ request }) => run(request),
 } } });
