@@ -63,7 +63,8 @@ function Tasks() {
       const r = await completeTask({ data: { initData, taskId: task.id } });
       setData((d) => d && { ...d, me: { ...d.me, balance: r.balance, power_level: r.power_level }, done: [...new Set([...d.done, task.id])] });
       haptic("success");
-      toast.success(`+${fmt(task.reward)} ORAI · +2 tickets`);
+      if (r.previewVerified) toast.success("Tiger Case verification passed in Preview; no ORAI was credited.");
+      else toast.success(`+${fmt(task.reward)} ORAI · +2 tickets`);
     } catch (e: any) {
       if (!silent) toast.error(e?.message === "TASK_NOT_VERIFIED" ? x("taskNotVerified") : e.message);
     }
