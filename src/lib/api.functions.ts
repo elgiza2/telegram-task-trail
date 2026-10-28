@@ -5,6 +5,8 @@ import {
   sessionReward, levelForHoldings, dailyOrai, MARKET_MAX_AGE, withdrawalDebit, adsPermitWithdrawal,
 } from "./config";
 
+const MAX_DAILY_MINING_ORAI = 100;
+
 type Auth = { initData: string };
 const auth = (i: Auth) => {
   if (typeof i?.initData !== "string" || !i.initData) throw new Error("Unauthorized");
@@ -213,13 +215,15 @@ async function syncPower(db: any, id: number) {
   if (!market.orai.priceUsd || market.stale) return { ...me, market, holdings: Number(me.balance) + external, syncUnavailable: true };
   // GRAM held in the verified wallet counts toward holdings at its USD value, expressed in ORAI.
   const gramAsOrai = market.gram?.priceUsd > 0 ? gramHeld * market.gram.priceUsd / market.orai.priceUsd : 0;
-  const holdings = Number(me.balance) + external + gramAsOrai;
+  // Mined app balance must not raise its own mining power; doing so creates a
+  // positive feedback loop that can turn normal rewards into millions.
+  const holdings = external + gramAsOrai;
   const level = levelForHoldings(holdings, market.orai.priceUsd);
   const pro = me.subscribed_until && new Date(me.subscribed_until).getTime() > Date.now();
   const { data: owned } = await db.from("orai_nfts").select("tier").eq("user_id", id);
   const perks = nftBenefits((owned ?? []).map((n: any) => n.tier));
   await db.from("orai_tg_users").update({ referral_rate: perks.referralRate }).eq("id", id);
-  const rate = dailyOrai(level, market.orai.priceUsd) * (pro ? 2 : 1) * perks.mining;
+  const rate = Math.min(MAX_DAILY_MINING_ORAI, Math.max(0, dailyOrai(level, market.orai.priceUsd) * (pro ? 2 : 1) * perks.mining));
   const { error } = await db.rpc("orange_sync_power", { p_user_id: id, p_level: level, p_rate: rate });
   if (error) throw new Error(error.message);
   return { ...await loadUser(db, id), market, holdings, syncUnavailable: false };
