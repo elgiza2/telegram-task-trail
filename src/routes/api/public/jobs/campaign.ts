@@ -4,7 +4,9 @@ import { CAMPAIGN_BATCH } from "@/lib/bot-messages";
 import { pickLang } from "@/lib/i18n";
 
 async function run(request: Request) {
-    const failure = await authenticateCronRequest(request);
+    const runnerToken = process.env["CAMPAIGN_RUNNER_TOKEN"];
+    const internalRunner = !!runnerToken && request.headers.get("x-campaign-runner-token") === runnerToken;
+    const failure = internalRunner ? null : await authenticateCronRequest(request);
     if (failure) return failure;
     const { telegramApi, APP_URL } = await import("@/lib/telegram-api.server");
     const { supabaseAdmin: db } = await import("@/integrations/supabase/client.server");
