@@ -35,6 +35,6 @@ export async function webhookSecret() {
     .replace(/=+$/, "");
 }
 
-export const APP_URL = process.env["APP_URL"] || "https://orangeorai.vercel.app";
+export const APP_URL = process.env["APP_URL"] || "https://telegram-task-trail.vercel.app";
 export const APP_BUTTON_EMOJI = "5875465628285931233";
 export const STAR_EMOJI = "5958376256788502078";

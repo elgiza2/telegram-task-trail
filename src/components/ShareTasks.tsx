@@ -8,7 +8,7 @@ import { prepareShareMessage } from "@/lib/share.functions";
 import { TaskRow } from "@/components/TaskRow";
 import { pendingTasks } from "@/lib/task-visibility";
 
-const APP = "https://orangeorai.vercel.app";
+const APP = "https://telegram-task-trail.vercel.app";
 
 export function ShareTasks({ onClaim }: { onClaim: (task: any) => Promise<void> }) {
   const { data, initData, demo } = useStore();
