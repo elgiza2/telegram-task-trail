@@ -1,1 +1,0 @@
-{"rewrites":[{"source":"/__l5e/:path*","destination":"https://telegram-task-trail.lovable.app/__l5e/:path*"},{"source":"/_serverFn/:path*","destination":"https://telegram-task-trail.lovable.app/_serverFn/:path*"},{"source":"/api/:path*","destination":"https://telegram-task-trail.lovable.app/api/:path*"},{"source":"/:path*","destination":"/index.html"}]}
