@@ -20,6 +20,8 @@ export const Route=createFileRoute('/api/public/telegram/webhook')({server:{hand
  if(command!=='/start')return Response.json({ok:true});
  const body={chat_id:msg.chat.id,photo:APP_URL+'/start-banner.jpg',caption:`<tg-emoji emoji-id="${STAR_EMOJI}">⭐</tg-emoji> <b>Welcome to Orange</b>\n\n<b>Your crew. Your next adventure.</b>\nMine ORAI, unlock rewards and play with free tickets.\n\nYour 2,000 ORAI welcome credit is ready.`,parse_mode:'HTML',reply_markup:{inline_keyboard:[[{style:'primary',text:'Open Orange',icon_custom_emoji_id:APP_BUTTON_EMOJI,web_app:{url:APP_URL}}]]}};
  let r=await telegramApi('sendPhoto',body);
+ if(!r.ok&&r.error_code===403)return Response.json({ok:true,skipped:true});
  if(!r.ok&&r.error_code===400)r=await telegramApi('sendPhoto',{...body,caption:'<b>Welcome to Orange</b>\n\n<b>Your crew. Your next adventure.</b>\nMine ORAI, unlock rewards and play with free tickets.\n\nYour 2,000 ORAI welcome credit is ready.',reply_markup:{inline_keyboard:[[{style:'primary',text:'Open Orange',web_app:{url:APP_URL}}]]}});
+ if(!r.ok&&r.error_code===403)return Response.json({ok:true,skipped:true});
  return Response.json({ok:r.ok},{status:r.ok?200:503});
 }}}});
