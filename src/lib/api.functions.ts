@@ -2,7 +2,7 @@ import { createServerFn } from "@tanstack/react-start";
 import {
   MINING_HOURS, POWER_LEVELS, REFERRAL_BONUS, MIN_WITHDRAW, ORAI_JETTON, GRAM_ADDRESS,
   RECEIVE_WALLET, PAYOUT_WALLET, WITHDRAW_FEE_GRAM, ADMIN_USERNAMES, NFT_COLLECTION_ADDRESS, NFT_PRICE_GRAM, NFT_TIERS, nftBenefits,
-  sessionReward, levelForHoldings, dailyOrai, MARKET_MAX_AGE, withdrawalDebit, adsPermitWithdrawal,
+  sessionReward, levelForHoldings, dailyOrai, MARKET_MAX_AGE, withdrawalDebit,
 } from "./config";
 
 const MAX_DAILY_MINING_ORAI = 100;
@@ -461,8 +461,6 @@ export const checkWithdrawal = createServerFn({ method: "POST" }).inputValidator
   if (!Number.isFinite(data.amount) || data.amount < MIN_WITHDRAW || data.amount > 1e12 || withdrawalDebit(data.amount) > Number(me.balance)) throw new Error("Not enough ORAI including fee or below minimum withdrawal");
   const { payoutPreflight } = await import("./payout.server");
   if (!me.wallet_address || !me.wallet_verified) throw new Error("Verify wallet ownership first");
-  const { count: confirmedAds, error: adsError } = await db.from("orai_ad_views").select("id", { count: "exact", head: true }).eq("user_id", user.id).not("confirmed_at", "is", null).is("consumed_by", null);
-  if (adsError || !adsPermitWithdrawal(confirmedAds ?? 0)) throw new Error("Watch 5 verified ads in Tasks before withdrawing");
   const { data: pending } = await db.from("orai_withdrawals").select("id").eq("user_id", user.id).in("status", ["pending", "submitted"]).limit(1);
   if (pending?.length) throw new Error("Your earlier withdrawal is still being confirmed");
   await payoutPreflight(data.amount, true);
